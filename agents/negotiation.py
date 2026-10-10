@@ -48,6 +48,7 @@ def negotiate(
     state: dict[str, float],
     probes_used: int,
     max_probes: int = 2,
+    speak: Callable | None = None,  # optional wording layer: speak(kind, facts, fallback, spec) -> str
 ) -> Outcome:
     trail: list[int] = []
     n = len(agents)
@@ -92,12 +93,18 @@ def negotiate(
             asked.add((x.id, y.id))
             hy, py = top(y.belief)
             mine = {f: x.own_levels[f] for f in x.discriminating_features(hx, hy)[:EVIDENCE_PER_REPLY]}
+            template = (f"@{y.id}: you say {hy.value} ({py:.0%}) but I see "
+                        + (", ".join(f"{f} {l.value}" for f, l in mine.items()) or "nothing")
+                        + f", which points to {hx.value}. What is your evidence?")
+            words = template if speak is None else speak(
+                "challenge",
+                {"colleague": y.id, "my_hypothesis": hx.value, "their_hypothesis": hy.value,
+                 "their_confidence_pct": round(py * 100), "my_evidence": {f: l.value for f, l in mine.items()}},
+                template, x.spec)
             post(Message(run_id=run_id, tick=tick, sender=x.id, type=MessageType.CHALLENGE,
                          content={"target": y.id, "round": rnd, "my_hypothesis": hx.value,
                                   "their_hypothesis": hy.value, "my_evidence": {f: l.value for f, l in mine.items()}},
-                         rationale=f"@{y.id}: you say {hy.value} ({py:.0%}) but I see "
-                                   + (", ".join(f"{f} {l.value}" for f, l in mine.items()) or "nothing")
-                                   + f", which points to {hx.value}. What is your evidence?"))
+                         rationale=words))
             y_new = y.learn(x.id, mine)
             theirs = {f: y.own_levels[f] for f in y.discriminating_features(hy, hx)[:EVIDENCE_PER_REPLY]}
             x_new = x.learn(y.id, theirs)

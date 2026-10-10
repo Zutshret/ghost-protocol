@@ -17,6 +17,7 @@ from agents.agent_base import Agent, fmt_belief, load_registry, top
 from agents.bus import InMemoryBus
 from agents.llm import llm_calls
 from agents.negotiation import Outcome, negotiate
+from agents import voice
 from agents.recruitment import recruitment_needed, select_initial_team
 from backend import adapters as ad
 from shared.types import (
@@ -84,6 +85,14 @@ class IncidentEngine:
     def publish(self, type: MessageType, sender: str, content: dict | None = None, rationale: str = "") -> Message:
         return self.bus.publish(Message(run_id=self.run_id, tick=self.tick, sender=sender, type=type,
                                         content=content or {}, rationale=rationale))
+
+    def _say(self, kind: str, facts: dict, fallback: str, spec=None, speaker: str = "the team") -> str:
+        """Wording layer: the LLM's phrasing when --llm is on and it is faithful, else the template."""
+        if not self.use_llm:
+            return fallback
+        if spec is not None:
+            return voice.say(kind, facts, fallback, speaker=spec.name, role=spec.role, goal=spec.goal)
+        return voice.say(kind, facts, fallback, speaker=speaker)
 
     def _observe(self, agent_id: str) -> Observation:
         try:
@@ -187,6 +196,16 @@ class IncidentEngine:
             brier_score=round(ad.brier(final_b, self.true_fault), 4) if final_b else None,
             llm_calls=llm_calls() - llm0,
         )
+        if self.use_llm:
+            fallback = (f"The cause was {self.true_fault.value}. Actions taken: "
+                        f"{', '.join(a.value for a in real) or 'none'}. Recovery took {metrics.recovery_time} ticks.")
+            summary = self._say("summary", {
+                "true_cause": self.true_fault.value, "actions_taken": [a.value for a in real],
+                "asked_a_human": self.escalated, "recovery_ticks": metrics.recovery_time,
+                "recovered": self.recovered_at is not None, "availability_pct": round(metrics.availability * 100),
+                "wrong_actions": metrics.unnecessary_actions, "mode": self.mode.value,
+            }, fallback, speaker="the incident coordinator")
+            self.publish(MessageType.TELEMETRY, "system", {"event": "summary", "summary": summary}, summary)
         self.publish(MessageType.TELEMETRY, "system", {"event": "end", "metrics": metrics.model_dump(mode="json")},
                      f"Run finished. Recovery {metrics.recovery_time} ticks, availability {metrics.availability:.1%}, "
                      f"unnecessary actions {metrics.unnecessary_actions}, correct diagnosis {metrics.correct_diagnosis}.")
@@ -314,7 +333,7 @@ class IncidentEngine:
         negotiating = self.mode == Mode.C or (self.mode == Mode.D and self.agents_mode_for_d == Mode.C)
         if negotiating:
             out = negotiate(self.team, self.bus.publish, self.run_id, self.tick, self.state,
-                            self.probes_used, MAX_PROBES)
+                            self.probes_used, MAX_PROBES, speak=self._say)
             out.provenance = trail + out.provenance
             sender = "team"
             group = _mean([a.belief for a in self.team])  # for display / Brier only, not for deciding
@@ -323,11 +342,17 @@ class IncidentEngine:
             for f in self.failed:
                 pooled = ad.failed_action_update(pooled, f)
             d = ad.decide(pooled, self.state, self.probes_used)
+            template = (f"Pooled belief: {top(pooled)[0].value} {top(pooled)[1]:.0%} "
+                        f"(entropy {ad.entropy(pooled):.2f} bits). Decision: {d.kind} - {d.reason}.")
+            words = self._say("aggregator", {
+                "decision": d.kind, "action": d.action.value, "top_cause": top(pooled)[0].value,
+                "top_probability_pct": round(top(pooled)[1] * 100), "uncertainty_bits": round(ad.entropy(pooled), 2),
+                "expected_costs_in_ticks": getattr(d, "costs", {}), "reason": d.reason,
+            }, template, speaker="the aggregator")
             p = self.publish(MessageType.PROPOSAL, "aggregator",
                              {"action": d.action.value, "decision": d.kind, "pooled": fmt_belief(pooled),
                               "entropy": round(ad.entropy(pooled), 3), "provenance": trail},
-                             f"Pooled belief: {top(pooled)[0].value} {top(pooled)[1]:.0%} "
-                             f"(entropy {ad.entropy(pooled):.2f} bits). Decision: {d.kind} - {d.reason}.")
+                             words)
             out = Outcome(d.kind, d.action, d.reason, trail + [p.id])
             sender, group = "aggregator", pooled
         self.last_belief = group
@@ -351,10 +376,16 @@ class IncidentEngine:
     def _escalate(self, belief: Belief, out: Outcome) -> Action:
         self.escalated = True
         options = ad.escalation_options(belief, self.state)
+        briefing = self._say("briefing", {
+            "why_asking": out.reason,
+            "options": [{"action": o["action"], "likely_cause": o["hypothesis"],
+                         "probability_pct": None if o["probability"] is None else round(o["probability"] * 100),
+                         "risk": o["risk"], "needs_override": o["blocked_without_approval"]} for o in options],
+        }, f"Asking a human: {out.reason}.", speaker="the incident coordinator")
         esc = self.publish(MessageType.ESCALATE, "team" if self.mode != Mode.B else "aggregator", {
             "options": options, "reason": out.reason, "belief": fmt_belief(belief),
             "agents": {a.id: fmt_belief(a.belief) for a in self.team}, "provenance": out.provenance,
-        }, f"Asking a human: {out.reason}.")
+        }, briefing)
         reply = self.human(esc.content | {"escalation_id": esc.id}, self) or {}
         decision = reply.get("decision", "reject")
         action = Action(reply.get("action", "noop")) if decision == "approve" else Action.NOOP

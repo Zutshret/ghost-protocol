@@ -47,6 +47,24 @@ uv run python eval/compare_modes.py --modes B,C --ablate database
 
 Results show up in the console's **results** tab.
 
+## LLM voice (optional)
+
+With a key in `.env` and the console's **LLM** box ticked, the agents' challenges, the
+aggregator's explanation, the briefing a human reads before approving, and an end-of-run
+summary are written in natural language by the LLM (`agents/voice.py`). It only changes
+words: actions, votes and escalations are decided by code first, and any LLM text that
+invents a number, cause or action is thrown away in favour of the template.
+
+```bash
+uv run python scripts/warm_llm_cache.py        # run once before the demo: each call takes ~4 s,
+                                               # cached answers are instant
+uv run python eval/evaluate_llm.py --seeds 5   # proof: same decisions with the LLM off and on
+```
+
+Free tiers allow about 15 requests a minute. `agents/llm.py` spaces calls out
+(`LLM_MAX_RPM`, default 12), waits when the provider says "retry in Ns", and falls back to
+templates if a call still fails, so the demo never depends on the network.
+
 ## Layout
 
 ```
