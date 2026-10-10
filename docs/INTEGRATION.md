@@ -51,7 +51,7 @@ that agent's observation from `upstream_timeouts` in the state.
 | S5 correct / asked human | 0% / 0% (never recovers) | 95% / 100% | 95% / 100% | 85% / 100% |
 
 Ablation (`eval/results/compare_ablate_database.json`): removing the Database
-agent's evidence makes S1 need a human 90–95% of the time (versus 0–10%), and
-drops S5 correct diagnosis from 100% to 0–15%. Removing the Deployment agent
+agent's evidence makes Mode C ask a human on S1 every time (versus 5%), because
+nobody can vouch for the failover, and drops S5 correct diagnosis from 95% to 0–5%. Removing the Deployment agent
 changes little, because the others infer bad_deploy by elimination. That is
 worth a sentence in the lessons learned.
