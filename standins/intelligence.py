@@ -167,6 +167,7 @@ class Decision:
 
 
 def decide(pooled: Belief, state: dict[str, float], probes_used: int) -> Decision:
+    from backend.adapters import validate  # Person A's validator when present
     top = max(pooled, key=pooled.get)
     p = pooled[top]
     action = CORRECT_FIX[top]
@@ -181,6 +182,7 @@ def decide(pooled: Belief, state: dict[str, float], probes_used: int) -> Decisio
 
 
 def escalation_options(pooled: Belief, state: dict[str, float]) -> list[dict]:
+    from backend.adapters import validate  # Person A's validator when present
     opts = []
     for h, p in sorted(pooled.items(), key=lambda kv: -kv[1])[:3]:
         a = CORRECT_FIX[h]

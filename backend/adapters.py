@@ -38,16 +38,27 @@ def make_belief_engine():
     return _si.StandInBeliefEngine(), "standins.intelligence"
 
 
-# Pooling, decision rule, runbook and validator: stand-ins until Person A's
-# versions exist. Swap these imports for the real ones in one line each.
+# Pooling and the decision rule: stand-ins until Person A's intelligence/ lands.
 log_pool = _si.log_pool
 entropy = _si.entropy
 brier = _si.brier
 failed_action_update = _si.failed_action_update
-runbook_matches = _si.runbook_matches
-validate = _si.validate
 decide = _si.decide
 escalation_options = _si.escalation_options
+
+
+def _real_or_standin(module: str, name: str, fallback):
+    if not FORCE_STANDINS:
+        try:
+            return getattr(__import__(module, fromlist=[name]), name)
+        except ImportError:
+            pass
+    return fallback
+
+
+# Person A's runbook (A3) and safety validator, with the stand-ins as fallback.
+runbook_matches = _real_or_standin("simulator.runbook", "runbook_matches", _si.runbook_matches)
+validate = _real_or_standin("simulator.validator", "validate", _si.validate)
 
 
 def _pick_level_of():
