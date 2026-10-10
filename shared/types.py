@@ -53,6 +53,7 @@ class Mode(str, Enum):
 class ScenarioId(str, Enum):
     S1 = "S1"  # clear db_fault
     S2 = "S2"  # bad_deploy that looks like an attack
+    S3 = "S3"  # dependency_timeout (shows Network Analyst recruitment)
     S5 = "S5"  # ambiguous and high-stakes -> ask a human
 
 
@@ -144,6 +145,7 @@ class MessageType(str, Enum):
 class Message(BaseModel):
     """Everything on the bus uses this shape (also what the console shows)."""
 
+    id: int = 0  # set by the bus on publish; used for decision provenance
     run_id: str
     tick: int
     sender: str  # agent id, "router", "runbook", "validator", "human", ...
