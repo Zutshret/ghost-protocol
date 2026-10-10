@@ -13,7 +13,9 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import re
 import threading
+import time
 from pathlib import Path
 from typing import TypeVar
 
@@ -28,6 +30,31 @@ T = TypeVar("T", bound=BaseModel)
 
 _lock = threading.Lock()
 _stats = {"calls": 0, "cache_hits": 0, "failures": 0}
+
+# Free tiers allow only ~15 requests/minute. Space real API calls out (cached answers are free)
+# and, if the provider still says "slow down", wait as long as it asks and try again.
+MAX_RPM = max(1, int(os.getenv("LLM_MAX_RPM", "12")))
+_gate = threading.Lock()
+_next_call_at = 0.0
+
+
+def _throttle() -> None:
+    global _next_call_at
+    with _gate:
+        now = time.monotonic()
+        wait = max(0.0, _next_call_at - now)
+        _next_call_at = max(now, _next_call_at) + 60.0 / MAX_RPM
+    if wait:
+        time.sleep(wait)
+
+
+def _rate_limit_delay(exc: Exception) -> float | None:
+    """Seconds the provider asked us to wait, or None if this was not a rate-limit error."""
+    text = str(exc)
+    if "429" not in text and "RateLimit" not in type(exc).__name__ and "RESOURCE_EXHAUSTED" not in text:
+        return None
+    m = re.search(r"retry in ([\d.]+)s", text) or re.search(r'"retryDelay": "(\d+)s"', text)
+    return min(65.0, float(m.group(1)) + 1.0) if m else 20.0
 
 
 def model_name() -> str:
@@ -95,8 +122,9 @@ def ask_json(prompt: str, schema: type[T], system: str = "", max_tokens: int = 4
     messages.append({"role": "system", "content": (system + "\n\n" + instructions).strip()})
     messages.append({"role": "user", "content": prompt})
 
-    for attempt in range(2):
+    for attempt in range(3):
         try:
+            _throttle()
             with _lock:
                 _stats["calls"] += 1
             extra = {} if model.startswith("gemini/") else {"temperature": 0}  # Gemini 3 deprecates it
@@ -111,7 +139,10 @@ def ask_json(prompt: str, schema: type[T], system: str = "", max_tokens: int = 4
             return out
         except ValidationError as exc:
             messages.append({"role": "user", "content": f"That was invalid: {str(exc)[:300]}. Try again."})
-        except Exception:  # noqa: BLE001 - network/provider errors -> fallback
+        except Exception as exc:  # noqa: BLE001 - network/provider errors -> retry, then fallback
+            if attempt < 2:
+                time.sleep(_rate_limit_delay(exc) or 1.0)  # honour "retry in Xs"; else a short pause for blips
+                continue
             break
     with _lock:
         _stats["failures"] += 1

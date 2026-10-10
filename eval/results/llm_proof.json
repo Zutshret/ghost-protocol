@@ -1,0 +1,86 @@
+{
+ "model": "gemini/gemini-3.5-flash-lite",
+ "runs": 8,
+ "identical_decisions": 8,
+ "runs_with_different_wording": 8,
+ "voice_lines": {
+  "llm": 36,
+  "template": 0,
+  "rejected": 0
+ },
+ "llm_stats": {
+  "calls": 22,
+  "cache_hits": 74,
+  "failures": 0
+ },
+ "avg_seconds_off": 0.0,
+ "avg_seconds_on": 32.8,
+ "mismatches": [],
+ "examples": [
+  {
+   "cell": [
+    "S2",
+    "B",
+    0
+   ],
+   "off": [
+    "Pooled belief: bad_deploy 100% (entropy 0.00 bits). Decision: act - P(bad_deploy)=1.00; expected cost [act 0.0, probe 1.0, escalate 3.0] -> act; validator: safe."
+   ],
+   "on": [
+    "The pooled evidence shows a top cause of bad_deploy with 100 percent probability and 0.0 uncertainty bits, making act the lowest expected cost at 0.0 ticks compared to 1.0 for probe and 3.0 for escalate. Therefore, I chose to act by executing a rollback_deploy since the validator confirmed it is safe.",
+    "The real cause of the incident was a bad deploy. The team rolled back the deploy, resulting in recovery after 7 ticks. The system fully recovered with an availability of 98 percent."
+   ]
+  },
+  {
+   "cell": [
+    "S2",
+    "C",
+    0
+   ],
+   "off": [
+    "I'm only 32% sure it's bad_deploy (I need 80%); let's probe first.",
+    "I'm only 33% sure it's bad_deploy (I need 60%); let's probe first.",
+    "I lean bad_deploy (100%). rollback_deploy fits my goal (prefer a clean rollback over risky infrastructure changes.; my cost 0.3)."
+   ],
+   "on": [
+    "I'm only 33% sure it's bad_deploy (I need 60%); let's probe first.",
+    "I lean bad_deploy (100%). rollback_deploy fits my goal (prefer a clean rollback over risky infrastructure changes.; my cost 0.3).",
+    "The real cause of the incident was a bad deploy. The team rolled back the deploy. We recovered in 7 ticks, achieved 98% availability, and fully recovered."
+   ]
+  },
+  {
+   "cell": [
+    "S5",
+    "B",
+    0
+   ],
+   "off": [
+    "Pooled belief: db_fault 93% (entropy 0.36 bits). Decision: probe - unsure: P(db_fault)=0.93; expected cost [probe 2.5, escalate 3.0, act 7.0] -> probe first.",
+    "Pooled belief: db_fault 93% (entropy 0.36 bits). Decision: escalate - still unsure after 2 probe(s); expected cost [escalate 3.0, act 7.0] -> ask a human.",
+    "Asking a human: still unsure after 2 probe(s); expected cost [escalate 3.0, act 7.0] -> ask a human."
+   ],
+   "on": [
+    "The pooled evidence points to a db_fault with a 93% probability, though we remain slightly unsure after 2 probe(s). I chose to escalate because the expected cost is 3.0 ticks compared to 7.0 ticks for acting.",
+    "We are 93 percent sure this is a database fault causing a db_fault. The leading option is to failover_db which has a risk of replication lag 20.0s > 12s: failover would risk a consistency violation, while blocking traffic can lock out real customers. I am asking instead of acting because we are still unsure after 2 probes and expected costs point to asking a human.",
+    "The incident was caused by db_fault. The team successfully performed failover_db in mode B after asking a human, with zero wrong actions. The system recovered in 9 ticks with 97% availability."
+   ]
+  },
+  {
+   "cell": [
+    "S5",
+    "C",
+    0
+   ],
+   "off": [
+    "@deployment: you say attack (97%) but I see payment_error_rate high, latency_ms high, which points to db_fault. What is your evidence?",
+    "@deployment: you say attack (86%) but I see lock_waits high, slow_queries high, which points to db_fault. What is your evidence?",
+    "Asking a human: validator blocked failover_db."
+   ],
+   "on": [
+    "I believe this is a db fault because lock waits and slow queries are high, whereas your hypothesis of an attack has 86% confidence. What is your evidence for that?",
+    "We are 83% sure the cause is db_fault and 15% sure it is an attack. Our leading option is to failover_db, which risks a replication lag of 15.1s exceeding 12s and risking a consistency violation, or we can block_traffic which risks locking out real customers. I am asking instead of acting because the validator blocked failover_db.",
+    "The real cause was a db fault in mode C, and after we asked a human, the team failed over the db. It recovered in 6 ticks, resulting in 98% availability with 0 wrong actions."
+   ]
+  }
+ ]
+}
