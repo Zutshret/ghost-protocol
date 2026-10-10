@@ -6,11 +6,13 @@ Instead of magic thresholds ("act if 90% sure"), compare what each choice is
 expected to cost, in "ticks of pain" (one tick of ongoing incident = 1):
 
   ACT now on the best fix:   if we are wrong (chance 1 - p) we waste a whole hold
-                             period before retrying, plus any extra damage the
-                             action does when misapplied (locking out customers,
-                             a risky database failover).
+                             period, plus any extra damage the action does when
+                             misapplied (locking out customers, a risky database
+                             failover), AND we are still stuck: the problem is not
+                             solved, so we still need an answer (assume a human).
   PROBE first:               costs a tick, but the cleaner readings cut the chance of
-                             being wrong in half (assumption: PROBE_GAIN).
+                             being wrong in half (assumption: PROBE_GAIN), and a human
+                             is still available afterwards.
   ASK a human:               costs a fixed delay while someone answers, but the
                              answer is right.
 
@@ -63,7 +65,9 @@ class Decision:
 
 def _loss_if_act(p_right: float, risky: bool, costs: CostModel) -> float:
     harm = costs.risky_harm if risky else 0.0
-    return (1.0 - p_right) * (costs.retry_cost + harm)
+    # A wrong action solves nothing: we lose the hold period, maybe cause harm, and
+    # still have to get an answer afterwards (modelled as the human's cost).
+    return (1.0 - p_right) * (costs.retry_cost + harm + costs.human_cost)
 
 
 def decide(
@@ -92,8 +96,9 @@ def decide(
     if best_act is not None:
         choices["act"] = best_act[0]
     if probes_used < costs.max_probes:
-        # After a probe we expect to act with (1 - gain) of today's risk of being wrong.
-        reference = best_act[0] if best_act is not None else costs.human_cost
+        # After a probe we expect (1 - gain) of today's risk of being wrong, and we can
+        # still ask a human if the probe does not settle it, so the cost is capped at that.
+        reference = min(best_act[0], costs.human_cost) if best_act is not None else costs.human_cost
         choices["probe"] = costs.probe_cost + (1.0 - costs.probe_gain) * reference
     rounded = {k: round(v, 2) for k, v in choices.items()}
     summary = ", ".join(f"{k} {v:.1f}" for k, v in sorted(rounded.items(), key=lambda kv: kv[1]))

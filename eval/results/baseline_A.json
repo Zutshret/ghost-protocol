@@ -1,7 +1,7 @@
 {
   "mode": "A",
   "seeds": 100,
-  "summary": {
+  "per_scenario": {
     "S1": {
       "runs": 100,
       "recovered_rate": 1.0,

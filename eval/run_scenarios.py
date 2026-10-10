@@ -132,7 +132,7 @@ def main() -> int:
 
     out = Path(args.out) if args.out else Path(__file__).parent / "results" / f"baseline_{mode}.json"
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(json.dumps({"mode": mode, "seeds": args.seeds, "summary": summary, "rows": rows}, indent=2))
+    out.write_text(json.dumps({"mode": mode, "seeds": args.seeds, "per_scenario": summary, "rows": rows}, indent=2))
     print(f"\nSaved {len(rows)} runs to {out}")
     return 0
 

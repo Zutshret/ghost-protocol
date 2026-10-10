@@ -25,9 +25,9 @@ def test_confident_and_harmless_means_act():
 
 
 def test_harmless_actions_need_less_confidence_than_risky_ones():
-    """At the same 70% confidence: rollback goes ahead, block_traffic does not."""
-    assert decide(belief(H.BAD_DEPLOY, 0.70), CALM, 0).kind == "act"
-    assert decide(belief(H.ATTACK, 0.70), CALM, 0).kind != "act"
+    """At the same 80% confidence: rollback goes ahead, block_traffic does not."""
+    assert decide(belief(H.BAD_DEPLOY, 0.80), CALM, 0).kind == "act"
+    assert decide(belief(H.ATTACK, 0.80), CALM, 0).kind != "act"
 
 
 def test_risky_action_acts_only_when_very_sure():
@@ -73,3 +73,11 @@ def test_escalation_options_shape_matches_what_the_console_reads():
     assert [o["action"] for o in opts][-1] == "noop" and len(opts) == 4
     assert opts[0]["hypothesis"] == "db_fault" and opts[0]["blocked_without_approval"]
     assert all({"action", "hypothesis", "probability", "risk", "blocked_without_approval"} <= set(o) for o in opts)
+
+
+def test_never_acts_on_a_long_shot_even_if_a_human_is_costly():
+    """Regression: with an expensive human the rule once 'acted' on a ~1% fix instead of asking."""
+    costly = CostModel(human_cost=8.0)
+    b = {H.DB_FAULT: 0.96, H.BAD_DEPLOY: 0.01, H.ATTACK: 0.02, H.DEPENDENCY_TIMEOUT: 0.01}
+    d = decide(b, SEVERE_LAG, probes_used=costly.max_probes, costs=costly)  # db failover is blocked
+    assert d.kind == "escalate"
