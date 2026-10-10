@@ -13,6 +13,26 @@ from shared.types import Action, Hypothesis, Level, Message, MessageType, Mode  
 from standins.intelligence import StandInBeliefEngine  # noqa: E402
 from standins.sim import StandInSimulator  # noqa: E402
 
+import pytest  # noqa: E402
+
+from backend import adapters  # noqa: E402
+from standins import intelligence as si  # noqa: E402
+from standins.sim import to_level  # noqa: E402
+
+
+@pytest.fixture(autouse=True)
+def use_standins(monkeypatch):
+    """Run on the stand-ins whatever order the test files load in (the env var alone is
+    too late if another test file imported the backend first)."""
+    import agents.negotiation as negotiation
+
+    monkeypatch.setattr(adapters, "FORCE_STANDINS", True)
+    for name in ("log_pool", "entropy", "brier", "failed_action_update", "decide",
+                 "escalation_options", "runbook_matches", "validate"):
+        monkeypatch.setattr(adapters, name, getattr(si, name))
+    monkeypatch.setattr(adapters, "level_of", to_level)
+    monkeypatch.setattr(negotiation, "validate", si.validate)
+
 
 def test_bus_publish_subscribe_and_topics():
     bus, got_all, got_veto = InMemoryBus(), [], []

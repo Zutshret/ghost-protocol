@@ -13,6 +13,7 @@ import uuid
 from dataclasses import dataclass, field
 from typing import Callable
 
+from agents import agntcy
 from agents.agent_base import Agent, fmt_belief, load_registry, top
 from agents.bus import InMemoryBus
 from agents.llm import llm_calls
@@ -152,12 +153,24 @@ class IncidentEngine:
         llm0 = llm_calls()
         avail: list[float] = []
 
+        # AGNTCY (optional, GHOST_AGNTCY=1): agent cards in the Directory + one trace per run.
+        self.trace = agntcy.RunTrace(self.run_id, {"ghost.scenario": self.scenario.value, "ghost.mode": self.mode.value,
+                                                   "ghost.seed": self.seed})
+        agntcy_info: dict = {"enabled": agntcy.enabled()}
+        note = ""
+        if agntcy.enabled():
+            agntcy.publish_registry(list(self.registry.values()))
+            self.bus.subscribe(self.trace.on_message)
+            agntcy_info = {**agntcy.status(), "trace_id": self.trace.trace_id}
+            note = (f" AGNTCY: {len(agntcy_info['cids'])} agent cards in the Directory"
+                    f" ({agntcy_info['directory']}); trace {self.trace.trace_id or 'off'}.")
+
         self.publish(MessageType.TELEMETRY, "system", {
             "event": "start", "scenario": self.scenario.value, "mode": self.mode.value, "seed": self.seed,
             "simulator": self.sim_source, "belief_engine": self.belief_source, "use_llm": self.use_llm,
             "roster": [s.public() for s in self.registry.values()], "services": self._services(),
-            "ablate": self.ablate,
-        }, f"Run {self.run_id}: scenario {self.scenario.value}, mode {self.mode.value}, seed {self.seed}")
+            "ablate": self.ablate, "agntcy": agntcy_info,
+        }, f"Run {self.run_id}: scenario {self.scenario.value}, mode {self.mode.value}, seed {self.seed}.{note}")
 
         for _ in range(RUN_TICKS):
             if self.should_stop():
@@ -209,6 +222,8 @@ class IncidentEngine:
         self.publish(MessageType.TELEMETRY, "system", {"event": "end", "metrics": metrics.model_dump(mode="json")},
                      f"Run finished. Recovery {metrics.recovery_time} ticks, availability {metrics.availability:.1%}, "
                      f"unnecessary actions {metrics.unnecessary_actions}, correct diagnosis {metrics.correct_diagnosis}.")
+        self.trace.end({"ghost.recovery_time": metrics.recovery_time, "ghost.correct": metrics.correct_diagnosis,
+                        "ghost.escalated": metrics.escalated_to_human})
         return metrics
 
     def _step(self, action: Action) -> dict[str, float]:

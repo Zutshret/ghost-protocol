@@ -36,9 +36,10 @@ interface Props {
   onSelect: (m: Msg) => void;
   agentFilter: string | null;
   clearAgentFilter: () => void;
+  traceId?: string | null;
 }
 
-export default function Ledger({ messages, roster, selected, onSelect, agentFilter, clearAgentFilter }: Props) {
+export default function Ledger({ messages, roster, selected, onSelect, agentFilter, clearAgentFilter, traceId }: Props) {
   const [showVotes, setShowVotes] = useState(true);
   const [follow, setFollow] = useState(true);
   const ref = useRef<HTMLDivElement>(null);
@@ -64,6 +65,10 @@ export default function Ledger({ messages, roster, selected, onSelect, agentFilt
       <div className="flex items-center gap-3 px-3 py-2 border-b border-slate-800 text-xs">
         <span className="font-semibold text-slate-200">Action ledger</span>
         <span className="text-slate-500">{rows.length} entries</span>
+        {traceId && (
+          <button onClick={() => navigator.clipboard?.writeText(traceId)} title={`OpenTelemetry trace ${traceId} (click to copy; find it in Grafana / ClickHouse)`}
+            className="mono text-[10px] px-1.5 rounded bg-emerald-500/15 text-emerald-300">trace {traceId.slice(0, 12)}…</button>
+        )}
         {agentFilter && (
           <button onClick={clearAgentFilter} className="px-1.5 rounded bg-slate-800 text-slate-300">
             only {nameFor(agentFilter, roster)} ✕

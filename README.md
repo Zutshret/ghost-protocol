@@ -38,6 +38,12 @@ Demo tip: S2, Mode D (then negotiation C), seed 2 (also 11, 12, 18, 22) shows th
 traffic wrongly, the switch to agent mode, Security disagreeing with everyone,
 and the team agreeing on a rollback. S5, Mode C, seed 1 shows the human approval panel.
 
+## AGNTCY (optional)
+
+`GHOST_AGNTCY=1` publishes the agents as cards in the AGNTCY Directory, recruits
+through it, and sends one OpenTelemetry trace per run. It's off by default and falls
+back to `registry.json` when Docker is off. See [docs/AGNTCY.md](docs/AGNTCY.md).
+
 ## Compare modes
 
 ```bash

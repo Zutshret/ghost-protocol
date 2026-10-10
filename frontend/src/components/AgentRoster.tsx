@@ -32,7 +32,9 @@ function BeliefBars({ belief, prev }: { belief?: Record<string, number>; prev?: 
   );
 }
 
-export default function AgentRoster({ agents, onSelect }: { agents: AgentView[]; onSelect: (id: string) => void }) {
+export default function AgentRoster({ agents, onSelect, cids }: {
+  agents: AgentView[]; onSelect: (id: string) => void; cids?: Record<string, string>;
+}) {
   return (
     <div className="grid grid-cols-2 xl:grid-cols-3 gap-3">
       {agents.map((a) => {
@@ -50,6 +52,11 @@ export default function AgentRoster({ agents, onSelect }: { agents: AgentView[];
               {!s.core && <span className="text-[9px] px-1 rounded bg-cyan-500/20 text-cyan-300">SPECIALIST</span>}
               <span className="ml-auto text-[10px] text-slate-500">{a.active ? "active" : s.core ? "idle" : "on registry"}</span>
             </div>
+            {cids?.[s.id] && (
+              <div className="mt-1 text-[10px] mono text-emerald-300/90 truncate" title={`AGNTCY Directory record (CID): ${cids[s.id]}`}>
+                <span className="px-1 rounded bg-emerald-500/15 mr-1">AGNTCY ✓</span>registered · {cids[s.id].slice(0, 10)}…{cids[s.id].slice(-6)}
+              </div>
+            )}
             <div className="text-[11px] text-slate-400 mt-0.5 line-clamp-2" title={s.goal}>Goal: {s.goal}</div>
             <div className="text-[10px] text-slate-500 mt-0.5 mono truncate" title={s.features.join(", ")}>
               sees: {s.features.map((f) => (

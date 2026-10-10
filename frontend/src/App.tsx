@@ -112,6 +112,10 @@ export default function App() {
                 {lastTel && <span>errors <b className={lastTel.content.error_rate > 0.03 ? "text-red-400" : "text-emerald-400"}>{(lastTel.content.error_rate * 100).toFixed(1)}%</b></span>}
                 {lastTel && <span>latency <b className={lastTel.content.latency_ms > 300 ? "text-red-400" : "text-emerald-400"}>{Math.round(lastTel.content.latency_ms)}ms</b></span>}
                 {lastTel?.content.lockout > 0 && <span className="text-orange-400">customer lockout!</span>}
+                {derived.agntcy?.enabled && (
+                  <span className={derived.agntcy.directory === "ok" ? "text-emerald-400" : "text-amber-400"}
+                    title="AGNTCY Directory + Observe (GHOST_AGNTCY=1)">AGNTCY {derived.agntcy.directory === "ok" ? "on" : "fallback"}</span>
+                )}
                 <span className={connected ? "text-emerald-500" : "text-slate-600"}>● {connected ? "live" : "idle"}</span>
               </div>
             </div>
@@ -153,12 +157,12 @@ export default function App() {
                 <span className="font-semibold text-slate-200">Agent roster</span>
                 <span>live beliefs over 4 hypotheses · click an agent to filter the ledger</span>
               </div>
-              <AgentRoster agents={derived.agents} onSelect={(id) => setAgentFilter(id === agentFilter ? null : id)} />
+              <AgentRoster agents={derived.agents} cids={derived.agntcy?.cids} onSelect={(id) => setAgentFilter(id === agentFilter ? null : id)} />
             </div>
           </section>
           <aside className="min-h-0 border-l border-slate-800 bg-slate-950 h-[60vh] lg:h-auto">
             <Ledger messages={messages} roster={roster} selected={selected?.id ?? null} onSelect={setSelected}
-              agentFilter={agentFilter} clearAgentFilter={() => setAgentFilter(null)} />
+              agentFilter={agentFilter} clearAgentFilter={() => setAgentFilter(null)} traceId={derived.agntcy?.trace_id} />
           </aside>
         </main>
       )}

@@ -12,6 +12,12 @@ dependencies = [
     "websockets>=17.2",
 ]
 
+[project.optional-dependencies]
+agntcy = [
+    "opentelemetry-exporter-otlp-proto-http>=1.45.1",
+    "opentelemetry-sdk>=1.45.1",
+]
+
 [dependency-groups]
 dev = [
     "pytest>=9.1.1",
