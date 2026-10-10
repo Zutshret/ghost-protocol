@@ -1,0 +1,8 @@
+@import "tailwindcss";
+
+html, body, #root { height: 100%; }
+body { font-family: ui-sans-serif, system-ui, "Segoe UI", sans-serif; color: #e2e8f0; }
+.mono { font-family: ui-monospace, "Cascadia Code", Consolas, monospace; }
+.react-flow__attribution { display: none; }
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }

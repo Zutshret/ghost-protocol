@@ -1,0 +1,80 @@
+[
+  {
+    "id": "gateway",
+    "name": "Gateway Agent",
+    "role": "Edge traffic and customer access",
+    "goal": "Keep real customers able to reach us; avoid locking anyone out.",
+    "features": ["request_rate", "edge_error_rate", "upstream_timeouts"],
+    "capabilities": ["edge_traffic_analysis", "customer_impact"],
+    "core": true,
+    "safety_critical": true,
+    "act_threshold": 0.7,
+    "action_cost": {"block_traffic": 6.0, "rollback_deploy": 1.5, "failover_db": 1.5, "restart_service": 1.5},
+    "color": "#3b82f6"
+  },
+  {
+    "id": "payments",
+    "name": "Payments Agent",
+    "role": "Payment flow health",
+    "goal": "Get payments flowing again as fast as possible.",
+    "features": ["payment_error_rate", "queue_depth", "latency_ms"],
+    "capabilities": ["payment_flow_analysis", "latency_analysis"],
+    "core": true,
+    "safety_critical": false,
+    "act_threshold": 0.55,
+    "action_cost": {"block_traffic": 0.5, "rollback_deploy": 0.5, "failover_db": 0.5, "restart_service": 0.5},
+    "color": "#10b981"
+  },
+  {
+    "id": "database",
+    "name": "Database Agent",
+    "role": "Database reliability",
+    "goal": "Never risk data consistency; refuse unsafe failovers.",
+    "features": ["replication_lag_s", "slow_queries", "lock_waits"],
+    "capabilities": ["database_analysis", "data_consistency"],
+    "core": true,
+    "safety_critical": true,
+    "act_threshold": 0.8,
+    "action_cost": {"block_traffic": 1.5, "rollback_deploy": 1.5, "failover_db": 4.0, "restart_service": 1.5},
+    "color": "#f59e0b"
+  },
+  {
+    "id": "security",
+    "name": "Security Agent",
+    "role": "Threat detection",
+    "goal": "Stop malicious traffic; block first, ask questions later.",
+    "features": ["traffic_anomaly", "failed_logins", "suspicious_sources"],
+    "capabilities": ["threat_detection", "traffic_anomaly_analysis"],
+    "core": true,
+    "safety_critical": false,
+    "act_threshold": 0.6,
+    "action_cost": {"block_traffic": 0.5, "rollback_deploy": 2.0, "failover_db": 3.0, "restart_service": 1.5},
+    "color": "#ef4444"
+  },
+  {
+    "id": "deployment",
+    "name": "Deployment Agent",
+    "role": "Release and change management",
+    "goal": "Prefer a clean rollback over risky infrastructure changes.",
+    "features": ["minutes_since_deploy", "canary_error_rate", "config_changes"],
+    "capabilities": ["change_management", "deploy_analysis"],
+    "core": true,
+    "safety_critical": false,
+    "act_threshold": 0.65,
+    "action_cost": {"block_traffic": 2.0, "rollback_deploy": 0.3, "failover_db": 2.0, "restart_service": 1.5},
+    "color": "#a855f7"
+  },
+  {
+    "id": "network_analyst",
+    "name": "Network Analyst",
+    "role": "Downstream dependency specialist (recruited on demand)",
+    "goal": "Find the timing-out dependency and restart it cleanly.",
+    "features": ["downstream_p99_ms", "conn_pool_saturation", "upstream_timeouts"],
+    "capabilities": ["dependency_timeout_analysis", "network_analysis"],
+    "core": false,
+    "safety_critical": false,
+    "act_threshold": 0.7,
+    "action_cost": {"block_traffic": 2.0, "rollback_deploy": 2.0, "failover_db": 2.0, "restart_service": 0.5},
+    "color": "#06b6d4"
+  }
+]
