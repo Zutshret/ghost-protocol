@@ -111,14 +111,16 @@ def test_db_fault_signature_is_distinct():
     sim.reset(Hypothesis.DB_FAULT, 0)
     run(sim, 12)
     assert level_of("traffic_anomaly", sim.clean["traffic_anomaly"]) == Level.LOW
-    assert level_of("minutes_since_deploy", sim.clean["minutes_since_deploy"]) == Level.LOW
+    # a deploy long ago is a BIG number, so level HIGH (normal)
+    assert level_of("minutes_since_deploy", sim.clean["minutes_since_deploy"]) == Level.HIGH
 
 
 def test_bad_deploy_signature():
     sim = Simulator()
     sim.reset(Hypothesis.BAD_DEPLOY, 0)
     run(sim, 12)
-    assert level_of("minutes_since_deploy", sim.clean["minutes_since_deploy"]) == Level.HIGH
+    # a RECENT deploy is a small number, so level LOW
+    assert level_of("minutes_since_deploy", sim.clean["minutes_since_deploy"]) == Level.LOW
     assert level_of("replication_lag_s", sim.clean["replication_lag_s"]) == Level.LOW
 
 
@@ -251,7 +253,7 @@ def test_s2_decoy_fools_security_signals_but_truth_is_deploy():
             run(sim, 12)
             assert level_of("traffic_anomaly", sim.clean["traffic_anomaly"]) == Level.HIGH
             assert sim.true_fault == Hypothesis.BAD_DEPLOY
-            assert level_of("minutes_since_deploy", sim.clean["minutes_since_deploy"]) == Level.HIGH
+            assert level_of("minutes_since_deploy", sim.clean["minutes_since_deploy"]) == Level.LOW
             return
     pytest.fail("no decoy seed found")
 
@@ -262,7 +264,42 @@ def test_s5_signals_are_mixed():
     run(sim, 12)
     assert level_of("replication_lag_s", sim.clean["replication_lag_s"]) == Level.HIGH
     assert level_of("traffic_anomaly", sim.clean["traffic_anomaly"]) in (Level.MEDIUM, Level.HIGH)
-    assert level_of("minutes_since_deploy", sim.clean["minutes_since_deploy"]) == Level.LOW
+    assert level_of("minutes_since_deploy", sim.clean["minutes_since_deploy"]) == Level.HIGH  # no recent deploy
+
+
+# ---------------- Person B's backend expectations ----------------
+def test_state_has_the_keys_person_b_reads():
+    sim = Simulator()
+    sim.reset(ScenarioId.S1, 0)
+    full = sim.step(Action.NOOP)
+    for key in ("error_rate", "latency_ms", "customer_lockout"):
+        assert key in full
+    assert sim.state.keys() == sim.truth.keys()
+    assert sim.tick == 1
+
+
+def test_s3_is_a_dependency_timeout():
+    sim = Simulator()
+    sim.reset(ScenarioId.S3, 0)
+    assert sim.true_fault == Hypothesis.DEPENDENCY_TIMEOUT
+    run(sim, 12)
+    assert level_of("upstream_timeouts", sim.clean["upstream_timeouts"]) == Level.HIGH
+
+
+def test_unknown_agent_raises_keyerror():
+    """Person B's backend relies on this to fall back for the recruited Network Analyst."""
+    sim = Simulator()
+    sim.reset(ScenarioId.S1, 0)
+    with pytest.raises(KeyError):
+        sim.observe("network_analyst")
+
+
+def test_recent_deploy_log_line_is_loud():
+    sim = Simulator()
+    sim.reset(Hypothesis.BAD_DEPLOY, 0)
+    run(sim, 10)
+    line = sim.observe("deployment").logs[0]
+    assert line.startswith("ERROR") and "last deploy" in line
 
 
 # ---------------- run limits ----------------

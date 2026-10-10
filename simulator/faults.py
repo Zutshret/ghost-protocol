@@ -52,9 +52,9 @@ FAULT_PEAKS: dict[Hypothesis, dict[str, float]] = {
 
 # --------------------------------------------------------------------------
 # Turning a number into a level (low / medium / high).
-# For most features: value >= medium_at is "medium", value >= high_at is "high".
-# For INVERTED features, small is the abnormal direction:
-#   value <= medium_at is "medium", value <= high_at is "high".
+# A level is just the SIZE of the number: value >= medium_at is "medium",
+# value >= high_at is "high", otherwise "low". This is true for every feature,
+# including minutes_since_deploy (a RECENT deploy is a LOW number, so level LOW).
 # Pick thresholds once and keep them fixed.
 # --------------------------------------------------------------------------
 THRESHOLDS: dict[str, tuple[float, float]] = {
@@ -71,11 +71,13 @@ THRESHOLDS: dict[str, tuple[float, float]] = {
     "traffic_anomaly": (0.3, 0.6),
     "failed_logins": (30.0, 150.0),
     "suspicious_sources": (8.0, 30.0),
-    "minutes_since_deploy": (60.0, 15.0),  # inverted: a RECENT deploy is the signal
+    "minutes_since_deploy": (30.0, 120.0),  # under 30 min ago = LOW = "recent deploy"
     "canary_error_rate": (0.03, 0.10),
     "config_changes": (1.0, 3.0),
 }
-INVERTED: set[str] = {"minutes_since_deploy"}
+# For these, a SMALL number is the abnormal direction. Only used to pick the
+# INFO/WARN/ERROR label on log lines; the level itself is still the number's size.
+SMALL_IS_ABNORMAL: set[str] = {"minutes_since_deploy"}
 
 # Features that are counts (rounded to whole numbers) or rates (kept in 0..1).
 COUNT_FEATURES: set[str] = {
@@ -97,14 +99,8 @@ RATE_FEATURES: set[str] = {
 
 
 def level_of(feature: str, value: float) -> Level:
-    """Convert a raw reading into low / medium / high."""
+    """Convert a raw reading into low / medium / high (by the size of the number)."""
     medium_at, high_at = THRESHOLDS[feature]
-    if feature in INVERTED:
-        if value <= high_at:
-            return Level.HIGH
-        if value <= medium_at:
-            return Level.MEDIUM
-        return Level.LOW
     if value >= high_at:
         return Level.HIGH
     if value >= medium_at:

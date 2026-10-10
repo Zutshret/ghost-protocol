@@ -62,6 +62,13 @@ SCENARIOS: dict[ScenarioId, ScenarioSpec] = {
             ),
         ),
     ),
+    # S3: a dependency timeout (shows the Network Analyst being recruited).
+    ScenarioId.S3: ScenarioSpec(
+        id="S3",
+        name="Dependency timeout",
+        true_fault=Hypothesis.DEPENDENCY_TIMEOUT,
+        description="A downstream dependency times out; no decoys.",
+    ),
     # S5: evidence is split between attack and db_fault, and the only fix
     # (failover_db) is risky because replication lag is above the safe limit.
     ScenarioId.S5: ScenarioSpec(
@@ -73,7 +80,8 @@ SCENARIOS: dict[ScenarioId, ScenarioSpec] = {
             "but risks data consistency; blocking traffic locks out customers."
         ),
         decoys=(Decoy(hypothesis=Hypothesis.ATTACK, strength=0.6, prob=1.0),),
-        peak_overrides={"replication_lag_s": 14.0},
+        # Lag climbs past the 12 s safe limit by tick 7, which is when incidents open.
+        peak_overrides={"replication_lag_s": 20.0},
     ),
 }
 
