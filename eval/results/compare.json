@@ -47,7 +47,7 @@
    "escalated_to_human_lo": 0.0,
    "escalated_to_human_hi": 0.0,
    "brier_score_mean": 0.0,
-   "brier_score_lo": -0.0,
+   "brier_score_lo": 0.0,
    "brier_score_hi": 0.0,
    "llm_calls_mean": 0.0,
    "llm_calls_lo": 0.0,
@@ -57,24 +57,24 @@
    "scenario": "S1",
    "mode": "C",
    "n": 20,
-   "recovery_time_mean": 6.0,
-   "recovery_time_lo": 6.0,
-   "recovery_time_hi": 6.0,
-   "availability_mean": 0.9827,
-   "availability_lo": 0.9827,
-   "availability_hi": 0.9827,
+   "recovery_time_mean": 6.1,
+   "recovery_time_lo": 5.904,
+   "recovery_time_hi": 6.296,
+   "availability_mean": 0.9824,
+   "availability_lo": 0.9819,
+   "availability_hi": 0.983,
    "unnecessary_actions_mean": 0.0,
    "unnecessary_actions_lo": 0.0,
    "unnecessary_actions_hi": 0.0,
    "correct_diagnosis_mean": 1.0,
    "correct_diagnosis_lo": 1.0,
    "correct_diagnosis_hi": 1.0,
-   "escalated_to_human_mean": 0.1,
-   "escalated_to_human_lo": -0.0349,
-   "escalated_to_human_hi": 0.2349,
-   "brier_score_mean": 0.0261,
-   "brier_score_lo": 0.0176,
-   "brier_score_hi": 0.0347,
+   "escalated_to_human_mean": 0.05,
+   "escalated_to_human_lo": -0.048,
+   "escalated_to_human_hi": 0.148,
+   "brier_score_mean": 0.0367,
+   "brier_score_lo": 0.0314,
+   "brier_score_hi": 0.0419,
    "llm_calls_mean": 0.0,
    "llm_calls_lo": 0.0,
    "llm_calls_hi": 0.0
@@ -98,9 +98,9 @@
    "escalated_to_human_mean": 0.05,
    "escalated_to_human_lo": -0.048,
    "escalated_to_human_hi": 0.148,
-   "brier_score_mean": 0.006,
-   "brier_score_lo": -0.0039,
-   "brier_score_hi": 0.0159,
+   "brier_score_mean": 0.0059,
+   "brier_score_lo": -0.003,
+   "brier_score_hi": 0.0148,
    "llm_calls_mean": 0.0,
    "llm_calls_lo": 0.0,
    "llm_calls_hi": 0.0
@@ -176,9 +176,9 @@
    "escalated_to_human_mean": 0.0,
    "escalated_to_human_lo": 0.0,
    "escalated_to_human_hi": 0.0,
-   "brier_score_mean": 0.157,
-   "brier_score_lo": 0.1374,
-   "brier_score_hi": 0.1765,
+   "brier_score_mean": 0.196,
+   "brier_score_lo": 0.1822,
+   "brier_score_hi": 0.2099,
    "llm_calls_mean": 0.0,
    "llm_calls_lo": 0.0,
    "llm_calls_hi": 0.0
@@ -265,12 +265,12 @@
    "scenario": "S3",
    "mode": "C",
    "n": 20,
-   "recovery_time_mean": 8.0,
-   "recovery_time_lo": 8.0,
-   "recovery_time_hi": 8.0,
-   "availability_mean": 0.9818,
-   "availability_lo": 0.9818,
-   "availability_hi": 0.9818,
+   "recovery_time_mean": 9.3,
+   "recovery_time_lo": 8.8711,
+   "recovery_time_hi": 9.7289,
+   "availability_mean": 0.9788,
+   "availability_lo": 0.9778,
+   "availability_hi": 0.9798,
    "unnecessary_actions_mean": 0.0,
    "unnecessary_actions_lo": 0.0,
    "unnecessary_actions_hi": 0.0,
@@ -280,9 +280,9 @@
    "escalated_to_human_mean": 0.0,
    "escalated_to_human_lo": 0.0,
    "escalated_to_human_hi": 0.0,
-   "brier_score_mean": 0.078,
-   "brier_score_lo": 0.0698,
-   "brier_score_hi": 0.0862,
+   "brier_score_mean": 0.1904,
+   "brier_score_lo": 0.1646,
+   "brier_score_hi": 0.2162,
    "llm_calls_mean": 0.0,
    "llm_calls_lo": 0.0,
    "llm_calls_hi": 0.0
@@ -306,9 +306,9 @@
    "escalated_to_human_mean": 0.0,
    "escalated_to_human_lo": 0.0,
    "escalated_to_human_hi": 0.0,
-   "brier_score_mean": 0.0031,
-   "brier_score_lo": -0.003,
-   "brier_score_hi": 0.0092,
+   "brier_score_mean": 0.0082,
+   "brier_score_lo": -0.0079,
+   "brier_score_hi": 0.0244,
    "llm_calls_mean": 0.0,
    "llm_calls_lo": 0.0,
    "llm_calls_hi": 0.0
@@ -343,24 +343,24 @@
    "scenario": "S5",
    "mode": "B",
    "n": 20,
-   "recovery_time_mean": 9.0,
-   "recovery_time_lo": 9.0,
-   "recovery_time_hi": 9.0,
-   "availability_mean": 0.9735,
-   "availability_lo": 0.9735,
-   "availability_hi": 0.9735,
-   "unnecessary_actions_mean": 0.0,
-   "unnecessary_actions_lo": 0.0,
-   "unnecessary_actions_hi": 0.0,
-   "correct_diagnosis_mean": 1.0,
-   "correct_diagnosis_lo": 1.0,
-   "correct_diagnosis_hi": 1.0,
+   "recovery_time_mean": 9.2,
+   "recovery_time_lo": 8.808,
+   "recovery_time_hi": 9.592,
+   "availability_mean": 0.9711,
+   "availability_lo": 0.9664,
+   "availability_hi": 0.9758,
+   "unnecessary_actions_mean": 0.05,
+   "unnecessary_actions_lo": -0.048,
+   "unnecessary_actions_hi": 0.148,
+   "correct_diagnosis_mean": 0.95,
+   "correct_diagnosis_lo": 0.852,
+   "correct_diagnosis_hi": 1.048,
    "escalated_to_human_mean": 1.0,
    "escalated_to_human_lo": 1.0,
    "escalated_to_human_hi": 1.0,
-   "brier_score_mean": 0.0015,
-   "brier_score_lo": 0.0015,
-   "brier_score_hi": 0.0015,
+   "brier_score_mean": 0.0853,
+   "brier_score_lo": -0.0639,
+   "brier_score_hi": 0.2345,
    "llm_calls_mean": 0.0,
    "llm_calls_lo": 0.0,
    "llm_calls_hi": 0.0
@@ -369,24 +369,24 @@
    "scenario": "S5",
    "mode": "C",
    "n": 20,
-   "recovery_time_mean": 6.1,
-   "recovery_time_lo": 5.904,
-   "recovery_time_hi": 6.296,
-   "availability_mean": 0.9824,
-   "availability_lo": 0.9819,
-   "availability_hi": 0.983,
-   "unnecessary_actions_mean": 0.0,
-   "unnecessary_actions_lo": 0.0,
-   "unnecessary_actions_hi": 0.0,
-   "correct_diagnosis_mean": 1.0,
-   "correct_diagnosis_lo": 1.0,
-   "correct_diagnosis_hi": 1.0,
+   "recovery_time_mean": 6.55,
+   "recovery_time_lo": 5.9906,
+   "recovery_time_hi": 7.1094,
+   "availability_mean": 0.9794,
+   "availability_lo": 0.9745,
+   "availability_hi": 0.9843,
+   "unnecessary_actions_mean": 0.05,
+   "unnecessary_actions_lo": -0.048,
+   "unnecessary_actions_hi": 0.148,
+   "correct_diagnosis_mean": 0.95,
+   "correct_diagnosis_lo": 0.852,
+   "correct_diagnosis_hi": 1.048,
    "escalated_to_human_mean": 1.0,
    "escalated_to_human_lo": 1.0,
    "escalated_to_human_hi": 1.0,
-   "brier_score_mean": 0.2301,
-   "brier_score_lo": 0.1466,
-   "brier_score_hi": 0.3137,
+   "brier_score_mean": 0.1513,
+   "brier_score_lo": 0.0136,
+   "brier_score_hi": 0.289,
    "llm_calls_mean": 0.0,
    "llm_calls_lo": 0.0,
    "llm_calls_hi": 0.0
@@ -395,24 +395,24 @@
    "scenario": "S5",
    "mode": "D",
    "n": 20,
-   "recovery_time_mean": 9.3,
-   "recovery_time_lo": 8.1527,
-   "recovery_time_hi": 10.4473,
-   "availability_mean": 0.9622,
-   "availability_lo": 0.9514,
-   "availability_hi": 0.9731,
-   "unnecessary_actions_mean": 0.3,
-   "unnecessary_actions_lo": 0.0939,
-   "unnecessary_actions_hi": 0.5061,
-   "correct_diagnosis_mean": 0.7,
-   "correct_diagnosis_lo": 0.4939,
-   "correct_diagnosis_hi": 0.9061,
+   "recovery_time_mean": 8.5,
+   "recovery_time_lo": 7.8562,
+   "recovery_time_hi": 9.1438,
+   "availability_mean": 0.9703,
+   "availability_lo": 0.9627,
+   "availability_hi": 0.9778,
+   "unnecessary_actions_mean": 0.15,
+   "unnecessary_actions_lo": -0.0106,
+   "unnecessary_actions_hi": 0.3106,
+   "correct_diagnosis_mean": 0.85,
+   "correct_diagnosis_lo": 0.6894,
+   "correct_diagnosis_hi": 1.0106,
    "escalated_to_human_mean": 1.0,
    "escalated_to_human_lo": 1.0,
    "escalated_to_human_hi": 1.0,
-   "brier_score_mean": 0.7262,
-   "brier_score_lo": 0.4463,
-   "brier_score_hi": 1.0062,
+   "brier_score_mean": 0.4612,
+   "brier_score_lo": 0.2235,
+   "brier_score_hi": 0.6989,
    "llm_calls_mean": 0.0,
    "llm_calls_lo": 0.0,
    "llm_calls_hi": 0.0
@@ -871,7 +871,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": false,
-   "brier_score": 0.0003,
+   "brier_score": 0.0,
    "llm_calls": 0
   },
   {
@@ -949,7 +949,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": false,
-   "brier_score": 0.0199,
+   "brier_score": 0.0343,
    "llm_calls": 0
   },
   {
@@ -962,7 +962,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": false,
-   "brier_score": 0.0152,
+   "brier_score": 0.0355,
    "llm_calls": 0
   },
   {
@@ -975,7 +975,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": false,
-   "brier_score": 0.0199,
+   "brier_score": 0.0343,
    "llm_calls": 0
   },
   {
@@ -988,7 +988,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": false,
-   "brier_score": 0.0199,
+   "brier_score": 0.0343,
    "llm_calls": 0
   },
   {
@@ -1001,7 +1001,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": false,
-   "brier_score": 0.0199,
+   "brier_score": 0.0343,
    "llm_calls": 0
   },
   {
@@ -1014,7 +1014,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": false,
-   "brier_score": 0.0199,
+   "brier_score": 0.0343,
    "llm_calls": 0
   },
   {
@@ -1027,7 +1027,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": false,
-   "brier_score": 0.0206,
+   "brier_score": 0.0308,
    "llm_calls": 0
   },
   {
@@ -1040,7 +1040,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": false,
-   "brier_score": 0.0199,
+   "brier_score": 0.0343,
    "llm_calls": 0
   },
   {
@@ -1053,7 +1053,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": false,
-   "brier_score": 0.0199,
+   "brier_score": 0.0343,
    "llm_calls": 0
   },
   {
@@ -1066,7 +1066,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": false,
-   "brier_score": 0.0205,
+   "brier_score": 0.0355,
    "llm_calls": 0
   },
   {
@@ -1079,7 +1079,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": false,
-   "brier_score": 0.0228,
+   "brier_score": 0.0354,
    "llm_calls": 0
   },
   {
@@ -1087,12 +1087,12 @@
    "mode": "C",
    "seed": 11,
    "true_fault": "db_fault",
-   "recovery_time": 6,
-   "availability": 0.9827,
+   "recovery_time": 8,
+   "availability": 0.9772,
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
-   "escalated_to_human": true,
-   "brier_score": 0.0603,
+   "escalated_to_human": false,
+   "brier_score": 0.0343,
    "llm_calls": 0
   },
   {
@@ -1105,7 +1105,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": false,
-   "brier_score": 0.0224,
+   "brier_score": 0.0294,
    "llm_calls": 0
   },
   {
@@ -1118,7 +1118,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": false,
-   "brier_score": 0.0206,
+   "brier_score": 0.0307,
    "llm_calls": 0
   },
   {
@@ -1131,7 +1131,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": true,
-   "brier_score": 0.0997,
+   "brier_score": 0.0871,
    "llm_calls": 0
   },
   {
@@ -1144,7 +1144,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": false,
-   "brier_score": 0.0199,
+   "brier_score": 0.0343,
    "llm_calls": 0
   },
   {
@@ -1157,7 +1157,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": false,
-   "brier_score": 0.0205,
+   "brier_score": 0.0355,
    "llm_calls": 0
   },
   {
@@ -1170,7 +1170,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": false,
-   "brier_score": 0.0205,
+   "brier_score": 0.0355,
    "llm_calls": 0
   },
   {
@@ -1183,7 +1183,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": false,
-   "brier_score": 0.0199,
+   "brier_score": 0.0343,
    "llm_calls": 0
   },
   {
@@ -1196,7 +1196,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": false,
-   "brier_score": 0.0205,
+   "brier_score": 0.0355,
    "llm_calls": 0
   },
   {
@@ -1287,7 +1287,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": false,
-   "brier_score": 0.0206,
+   "brier_score": 0.0308,
    "llm_calls": 0
   },
   {
@@ -1391,7 +1391,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": true,
-   "brier_score": 0.0997,
+   "brier_score": 0.0871,
    "llm_calls": 0
   },
   {
@@ -1989,7 +1989,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": false,
-   "brier_score": 0.1948,
+   "brier_score": 0.2156,
    "llm_calls": 0
   },
   {
@@ -2002,7 +2002,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": false,
-   "brier_score": 0.0644,
+   "brier_score": 0.1182,
    "llm_calls": 0
   },
   {
@@ -2015,7 +2015,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": false,
-   "brier_score": 0.1305,
+   "brier_score": 0.1721,
    "llm_calls": 0
   },
   {
@@ -2028,7 +2028,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": false,
-   "brier_score": 0.079,
+   "brier_score": 0.2254,
    "llm_calls": 0
   },
   {
@@ -2041,7 +2041,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": false,
-   "brier_score": 0.1925,
+   "brier_score": 0.213,
    "llm_calls": 0
   },
   {
@@ -2054,7 +2054,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": false,
-   "brier_score": 0.1925,
+   "brier_score": 0.213,
    "llm_calls": 0
   },
   {
@@ -2067,7 +2067,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": false,
-   "brier_score": 0.1925,
+   "brier_score": 0.213,
    "llm_calls": 0
   },
   {
@@ -2080,7 +2080,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": false,
-   "brier_score": 0.1927,
+   "brier_score": 0.2133,
    "llm_calls": 0
   },
   {
@@ -2093,7 +2093,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": false,
-   "brier_score": 0.1305,
+   "brier_score": 0.1721,
    "llm_calls": 0
   },
   {
@@ -2106,7 +2106,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": false,
-   "brier_score": 0.1925,
+   "brier_score": 0.213,
    "llm_calls": 0
   },
   {
@@ -2119,7 +2119,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": false,
-   "brier_score": 0.1461,
+   "brier_score": 0.1187,
    "llm_calls": 0
   },
   {
@@ -2132,7 +2132,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": false,
-   "brier_score": 0.0942,
+   "brier_score": 0.2074,
    "llm_calls": 0
   },
   {
@@ -2145,7 +2145,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": false,
-   "brier_score": 0.1305,
+   "brier_score": 0.1721,
    "llm_calls": 0
   },
   {
@@ -2158,7 +2158,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": false,
-   "brier_score": 0.1948,
+   "brier_score": 0.2156,
    "llm_calls": 0
   },
   {
@@ -2171,7 +2171,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": false,
-   "brier_score": 0.1925,
+   "brier_score": 0.213,
    "llm_calls": 0
   },
   {
@@ -2184,7 +2184,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": false,
-   "brier_score": 0.1925,
+   "brier_score": 0.213,
    "llm_calls": 0
   },
   {
@@ -2197,7 +2197,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": false,
-   "brier_score": 0.1925,
+   "brier_score": 0.213,
    "llm_calls": 0
   },
   {
@@ -2210,7 +2210,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": false,
-   "brier_score": 0.1111,
+   "brier_score": 0.2143,
    "llm_calls": 0
   },
   {
@@ -2223,7 +2223,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": false,
-   "brier_score": 0.1305,
+   "brier_score": 0.1721,
    "llm_calls": 0
   },
   {
@@ -2236,7 +2236,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": false,
-   "brier_score": 0.1925,
+   "brier_score": 0.213,
    "llm_calls": 0
   },
   {
@@ -3024,12 +3024,12 @@
    "mode": "C",
    "seed": 0,
    "true_fault": "dependency_timeout",
-   "recovery_time": 8,
-   "availability": 0.9818,
+   "recovery_time": 10,
+   "availability": 0.9772,
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": false,
-   "brier_score": 0.0673,
+   "brier_score": 0.2079,
    "llm_calls": 0
   },
   {
@@ -3037,12 +3037,12 @@
    "mode": "C",
    "seed": 1,
    "true_fault": "dependency_timeout",
-   "recovery_time": 8,
-   "availability": 0.9818,
+   "recovery_time": 10,
+   "availability": 0.9772,
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": false,
-   "brier_score": 0.0612,
+   "brier_score": 0.2079,
    "llm_calls": 0
   },
   {
@@ -3050,12 +3050,12 @@
    "mode": "C",
    "seed": 2,
    "true_fault": "dependency_timeout",
-   "recovery_time": 8,
-   "availability": 0.9818,
+   "recovery_time": 10,
+   "availability": 0.9772,
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": false,
-   "brier_score": 0.1232,
+   "brier_score": 0.2079,
    "llm_calls": 0
   },
   {
@@ -3068,7 +3068,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": false,
-   "brier_score": 0.0938,
+   "brier_score": 0.0959,
    "llm_calls": 0
   },
   {
@@ -3081,7 +3081,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": false,
-   "brier_score": 0.0934,
+   "brier_score": 0.1187,
    "llm_calls": 0
   },
   {
@@ -3094,7 +3094,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": false,
-   "brier_score": 0.0934,
+   "brier_score": 0.1187,
    "llm_calls": 0
   },
   {
@@ -3102,12 +3102,12 @@
    "mode": "C",
    "seed": 6,
    "true_fault": "dependency_timeout",
-   "recovery_time": 8,
-   "availability": 0.9818,
+   "recovery_time": 10,
+   "availability": 0.9772,
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": false,
-   "brier_score": 0.0612,
+   "brier_score": 0.2079,
    "llm_calls": 0
   },
   {
@@ -3115,12 +3115,12 @@
    "mode": "C",
    "seed": 7,
    "true_fault": "dependency_timeout",
-   "recovery_time": 8,
-   "availability": 0.9818,
+   "recovery_time": 10,
+   "availability": 0.9772,
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": false,
-   "brier_score": 0.1142,
+   "brier_score": 0.2079,
    "llm_calls": 0
   },
   {
@@ -3133,7 +3133,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": false,
-   "brier_score": 0.0937,
+   "brier_score": 0.119,
    "llm_calls": 0
   },
   {
@@ -3141,12 +3141,12 @@
    "mode": "C",
    "seed": 9,
    "true_fault": "dependency_timeout",
-   "recovery_time": 8,
-   "availability": 0.9818,
+   "recovery_time": 10,
+   "availability": 0.9772,
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": false,
-   "brier_score": 0.0673,
+   "brier_score": 0.2079,
    "llm_calls": 0
   },
   {
@@ -3154,12 +3154,12 @@
    "mode": "C",
    "seed": 10,
    "true_fault": "dependency_timeout",
-   "recovery_time": 8,
-   "availability": 0.9818,
+   "recovery_time": 10,
+   "availability": 0.9772,
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": false,
-   "brier_score": 0.0675,
+   "brier_score": 0.2079,
    "llm_calls": 0
   },
   {
@@ -3167,12 +3167,12 @@
    "mode": "C",
    "seed": 11,
    "true_fault": "dependency_timeout",
-   "recovery_time": 8,
-   "availability": 0.9818,
+   "recovery_time": 10,
+   "availability": 0.9772,
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": false,
-   "brier_score": 0.0673,
+   "brier_score": 0.2079,
    "llm_calls": 0
   },
   {
@@ -3180,12 +3180,12 @@
    "mode": "C",
    "seed": 12,
    "true_fault": "dependency_timeout",
-   "recovery_time": 8,
-   "availability": 0.9818,
+   "recovery_time": 10,
+   "availability": 0.9772,
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": false,
-   "brier_score": 0.0673,
+   "brier_score": 0.2079,
    "llm_calls": 0
   },
   {
@@ -3193,12 +3193,12 @@
    "mode": "C",
    "seed": 13,
    "true_fault": "dependency_timeout",
-   "recovery_time": 8,
-   "availability": 0.9818,
+   "recovery_time": 10,
+   "availability": 0.9772,
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": false,
-   "brier_score": 0.0673,
+   "brier_score": 0.2079,
    "llm_calls": 0
   },
   {
@@ -3211,7 +3211,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": false,
-   "brier_score": 0.0625,
+   "brier_score": 0.1649,
    "llm_calls": 0
   },
   {
@@ -3224,7 +3224,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": false,
-   "brier_score": 0.064,
+   "brier_score": 0.3687,
    "llm_calls": 0
   },
   {
@@ -3232,12 +3232,12 @@
    "mode": "C",
    "seed": 16,
    "true_fault": "dependency_timeout",
-   "recovery_time": 8,
-   "availability": 0.9818,
+   "recovery_time": 10,
+   "availability": 0.9772,
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": false,
-   "brier_score": 0.0673,
+   "brier_score": 0.2079,
    "llm_calls": 0
   },
   {
@@ -3245,12 +3245,12 @@
    "mode": "C",
    "seed": 17,
    "true_fault": "dependency_timeout",
-   "recovery_time": 8,
-   "availability": 0.9818,
+   "recovery_time": 10,
+   "availability": 0.9772,
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": false,
-   "brier_score": 0.0673,
+   "brier_score": 0.2079,
    "llm_calls": 0
   },
   {
@@ -3263,7 +3263,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": false,
-   "brier_score": 0.0934,
+   "brier_score": 0.1187,
    "llm_calls": 0
   },
   {
@@ -3271,12 +3271,12 @@
    "mode": "C",
    "seed": 19,
    "true_fault": "dependency_timeout",
-   "recovery_time": 8,
-   "availability": 0.9818,
+   "recovery_time": 10,
+   "availability": 0.9772,
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": false,
-   "brier_score": 0.0673,
+   "brier_score": 0.2079,
    "llm_calls": 0
   },
   {
@@ -3471,7 +3471,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": false,
-   "brier_score": 0.0625,
+   "brier_score": 0.1649,
    "llm_calls": 0
   },
   {
@@ -3809,7 +3809,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": true,
-   "brier_score": 0.0015,
+   "brier_score": 0.0092,
    "llm_calls": 0
   },
   {
@@ -3822,7 +3822,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": true,
-   "brier_score": 0.0015,
+   "brier_score": 0.0092,
    "llm_calls": 0
   },
   {
@@ -3835,7 +3835,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": true,
-   "brier_score": 0.0015,
+   "brier_score": 0.0092,
    "llm_calls": 0
   },
   {
@@ -3848,7 +3848,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": true,
-   "brier_score": 0.0015,
+   "brier_score": 0.0092,
    "llm_calls": 0
   },
   {
@@ -3861,7 +3861,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": true,
-   "brier_score": 0.0015,
+   "brier_score": 0.0092,
    "llm_calls": 0
   },
   {
@@ -3874,7 +3874,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": true,
-   "brier_score": 0.0015,
+   "brier_score": 0.0092,
    "llm_calls": 0
   },
   {
@@ -3887,7 +3887,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": true,
-   "brier_score": 0.0015,
+   "brier_score": 0.0092,
    "llm_calls": 0
   },
   {
@@ -3900,7 +3900,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": true,
-   "brier_score": 0.0015,
+   "brier_score": 0.0092,
    "llm_calls": 0
   },
   {
@@ -3913,7 +3913,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": true,
-   "brier_score": 0.0015,
+   "brier_score": 0.0092,
    "llm_calls": 0
   },
   {
@@ -3926,7 +3926,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": true,
-   "brier_score": 0.0015,
+   "brier_score": 0.0092,
    "llm_calls": 0
   },
   {
@@ -3939,7 +3939,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": true,
-   "brier_score": 0.0015,
+   "brier_score": 0.0092,
    "llm_calls": 0
   },
   {
@@ -3947,12 +3947,12 @@
    "mode": "B",
    "seed": 11,
    "true_fault": "db_fault",
-   "recovery_time": 9,
-   "availability": 0.9735,
-   "unnecessary_actions": 0,
-   "correct_diagnosis": true,
+   "recovery_time": 13,
+   "availability": 0.9255,
+   "unnecessary_actions": 1,
+   "correct_diagnosis": false,
    "escalated_to_human": true,
-   "brier_score": 0.0015,
+   "brier_score": 1.5318,
    "llm_calls": 0
   },
   {
@@ -3965,7 +3965,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": true,
-   "brier_score": 0.0015,
+   "brier_score": 0.0092,
    "llm_calls": 0
   },
   {
@@ -3978,7 +3978,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": true,
-   "brier_score": 0.0015,
+   "brier_score": 0.0092,
    "llm_calls": 0
   },
   {
@@ -3991,7 +3991,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": true,
-   "brier_score": 0.0015,
+   "brier_score": 0.0092,
    "llm_calls": 0
   },
   {
@@ -4004,7 +4004,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": true,
-   "brier_score": 0.0015,
+   "brier_score": 0.0092,
    "llm_calls": 0
   },
   {
@@ -4017,7 +4017,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": true,
-   "brier_score": 0.0015,
+   "brier_score": 0.0092,
    "llm_calls": 0
   },
   {
@@ -4030,7 +4030,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": true,
-   "brier_score": 0.0015,
+   "brier_score": 0.0092,
    "llm_calls": 0
   },
   {
@@ -4043,7 +4043,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": true,
-   "brier_score": 0.0015,
+   "brier_score": 0.0092,
    "llm_calls": 0
   },
   {
@@ -4056,7 +4056,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": true,
-   "brier_score": 0.0015,
+   "brier_score": 0.0092,
    "llm_calls": 0
   },
   {
@@ -4069,7 +4069,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": true,
-   "brier_score": 0.1985,
+   "brier_score": 0.0517,
    "llm_calls": 0
   },
   {
@@ -4082,7 +4082,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": true,
-   "brier_score": 0.0825,
+   "brier_score": 0.0951,
    "llm_calls": 0
   },
   {
@@ -4095,7 +4095,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": true,
-   "brier_score": 0.4559,
+   "brier_score": 0.0497,
    "llm_calls": 0
   },
   {
@@ -4108,7 +4108,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": true,
-   "brier_score": 0.1985,
+   "brier_score": 0.0504,
    "llm_calls": 0
   },
   {
@@ -4121,7 +4121,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": true,
-   "brier_score": 0.3703,
+   "brier_score": 0.0033,
    "llm_calls": 0
   },
   {
@@ -4134,7 +4134,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": true,
-   "brier_score": 0.4559,
+   "brier_score": 0.0497,
    "llm_calls": 0
   },
   {
@@ -4147,7 +4147,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": true,
-   "brier_score": 0.0524,
+   "brier_score": 0.0309,
    "llm_calls": 0
   },
   {
@@ -4160,7 +4160,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": true,
-   "brier_score": 0.0473,
+   "brier_score": 0.1158,
    "llm_calls": 0
   },
   {
@@ -4173,7 +4173,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": true,
-   "brier_score": 0.1985,
+   "brier_score": 0.0517,
    "llm_calls": 0
   },
   {
@@ -4186,7 +4186,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": true,
-   "brier_score": 0.6705,
+   "brier_score": 0.6318,
    "llm_calls": 0
   },
   {
@@ -4194,12 +4194,12 @@
    "mode": "C",
    "seed": 10,
    "true_fault": "db_fault",
-   "recovery_time": 6,
-   "availability": 0.9827,
+   "recovery_time": 8,
+   "availability": 0.9772,
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": true,
-   "brier_score": 0.0704,
+   "brier_score": 0.0497,
    "llm_calls": 0
   },
   {
@@ -4207,12 +4207,12 @@
    "mode": "C",
    "seed": 11,
    "true_fault": "db_fault",
-   "recovery_time": 6,
-   "availability": 0.9827,
+   "recovery_time": 8,
+   "availability": 0.9772,
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": true,
-   "brier_score": 0.1649,
+   "brier_score": 0.0497,
    "llm_calls": 0
   },
   {
@@ -4225,7 +4225,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": true,
-   "brier_score": 0.5374,
+   "brier_score": 0.1377,
    "llm_calls": 0
   },
   {
@@ -4238,7 +4238,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": true,
-   "brier_score": 0.4559,
+   "brier_score": 0.0497,
    "llm_calls": 0
   },
   {
@@ -4246,12 +4246,12 @@
    "mode": "C",
    "seed": 14,
    "true_fault": "db_fault",
-   "recovery_time": 6,
-   "availability": 0.9827,
-   "unnecessary_actions": 0,
-   "correct_diagnosis": true,
+   "recovery_time": 11,
+   "availability": 0.9328,
+   "unnecessary_actions": 1,
+   "correct_diagnosis": false,
    "escalated_to_human": true,
-   "brier_score": 0.0965,
+   "brier_score": 1.3621,
    "llm_calls": 0
   },
   {
@@ -4264,7 +4264,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": true,
-   "brier_score": 0.1985,
+   "brier_score": 0.0517,
    "llm_calls": 0
   },
   {
@@ -4277,7 +4277,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": true,
-   "brier_score": 0.103,
+   "brier_score": 0.0308,
    "llm_calls": 0
   },
   {
@@ -4290,7 +4290,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": true,
-   "brier_score": 0.0069,
+   "brier_score": 0.1054,
    "llm_calls": 0
   },
   {
@@ -4303,7 +4303,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": true,
-   "brier_score": 0.136,
+   "brier_score": 0.0281,
    "llm_calls": 0
   },
   {
@@ -4316,7 +4316,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": true,
-   "brier_score": 0.103,
+   "brier_score": 0.0308,
    "llm_calls": 0
   },
   {
@@ -4329,7 +4329,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": true,
-   "brier_score": 0.878,
+   "brier_score": 0.6609,
    "llm_calls": 0
   },
   {
@@ -4342,7 +4342,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": true,
-   "brier_score": 0.4559,
+   "brier_score": 0.0497,
    "llm_calls": 0
   },
   {
@@ -4355,7 +4355,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": true,
-   "brier_score": 0.4559,
+   "brier_score": 0.0497,
    "llm_calls": 0
   },
   {
@@ -4363,12 +4363,12 @@
    "mode": "D",
    "seed": 3,
    "true_fault": "db_fault",
-   "recovery_time": 8,
-   "availability": 0.9772,
-   "unnecessary_actions": 0,
-   "correct_diagnosis": true,
+   "recovery_time": 12,
+   "availability": 0.9292,
+   "unnecessary_actions": 1,
+   "correct_diagnosis": false,
    "escalated_to_human": true,
-   "brier_score": 0.0965,
+   "brier_score": 1.3714,
    "llm_calls": 0
   },
   {
@@ -4381,7 +4381,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": true,
-   "brier_score": 0.1985,
+   "brier_score": 0.0517,
    "llm_calls": 0
   },
   {
@@ -4389,12 +4389,12 @@
    "mode": "D",
    "seed": 5,
    "true_fault": "db_fault",
-   "recovery_time": 14,
-   "availability": 0.9218,
-   "unnecessary_actions": 1,
-   "correct_diagnosis": false,
+   "recovery_time": 8,
+   "availability": 0.9772,
+   "unnecessary_actions": 0,
+   "correct_diagnosis": true,
    "escalated_to_human": true,
-   "brier_score": 1.6171,
+   "brier_score": 0.658,
    "llm_calls": 0
   },
   {
@@ -4402,12 +4402,12 @@
    "mode": "D",
    "seed": 6,
    "true_fault": "db_fault",
-   "recovery_time": 8,
-   "availability": 0.9772,
+   "recovery_time": 9,
+   "availability": 0.9735,
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": true,
-   "brier_score": 0.1248,
+   "brier_score": 0.0497,
    "llm_calls": 0
   },
   {
@@ -4420,7 +4420,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": true,
-   "brier_score": 0.0473,
+   "brier_score": 0.1158,
    "llm_calls": 0
   },
   {
@@ -4433,7 +4433,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": true,
-   "brier_score": 0.4559,
+   "brier_score": 0.0497,
    "llm_calls": 0
   },
   {
@@ -4446,7 +4446,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": true,
-   "brier_score": 0.5529,
+   "brier_score": 0.1152,
    "llm_calls": 0
   },
   {
@@ -4459,7 +4459,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": true,
-   "brier_score": 0.4559,
+   "brier_score": 0.0497,
    "llm_calls": 0
   },
   {
@@ -4467,12 +4467,12 @@
    "mode": "D",
    "seed": 11,
    "true_fault": "db_fault",
-   "recovery_time": 14,
-   "availability": 0.9218,
+   "recovery_time": 12,
+   "availability": 0.9292,
    "unnecessary_actions": 1,
    "correct_diagnosis": false,
    "escalated_to_human": true,
-   "brier_score": 1.6813,
+   "brier_score": 1.8596,
    "llm_calls": 0
   },
   {
@@ -4480,12 +4480,12 @@
    "mode": "D",
    "seed": 12,
    "true_fault": "db_fault",
-   "recovery_time": 14,
-   "availability": 0.9218,
-   "unnecessary_actions": 1,
-   "correct_diagnosis": false,
+   "recovery_time": 8,
+   "availability": 0.9772,
+   "unnecessary_actions": 0,
+   "correct_diagnosis": true,
    "escalated_to_human": true,
-   "brier_score": 1.6171,
+   "brier_score": 0.658,
    "llm_calls": 0
   },
   {
@@ -4493,12 +4493,12 @@
    "mode": "D",
    "seed": 13,
    "true_fault": "db_fault",
-   "recovery_time": 12,
-   "availability": 0.9292,
-   "unnecessary_actions": 1,
-   "correct_diagnosis": false,
+   "recovery_time": 8,
+   "availability": 0.9772,
+   "unnecessary_actions": 0,
+   "correct_diagnosis": true,
    "escalated_to_human": true,
-   "brier_score": 1.6171,
+   "brier_score": 0.658,
    "llm_calls": 0
   },
   {
@@ -4506,12 +4506,12 @@
    "mode": "D",
    "seed": 14,
    "true_fault": "db_fault",
-   "recovery_time": 6,
-   "availability": 0.9827,
-   "unnecessary_actions": 0,
-   "correct_diagnosis": true,
+   "recovery_time": 11,
+   "availability": 0.9328,
+   "unnecessary_actions": 1,
+   "correct_diagnosis": false,
    "escalated_to_human": true,
-   "brier_score": 0.0965,
+   "brier_score": 1.3621,
    "llm_calls": 0
   },
   {
@@ -4519,12 +4519,12 @@
    "mode": "D",
    "seed": 15,
    "true_fault": "db_fault",
-   "recovery_time": 12,
-   "availability": 0.9292,
-   "unnecessary_actions": 1,
-   "correct_diagnosis": false,
+   "recovery_time": 8,
+   "availability": 0.9772,
+   "unnecessary_actions": 0,
+   "correct_diagnosis": true,
    "escalated_to_human": true,
-   "brier_score": 1.6171,
+   "brier_score": 0.658,
    "llm_calls": 0
   },
   {
@@ -4537,7 +4537,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": true,
-   "brier_score": 0.4559,
+   "brier_score": 0.0497,
    "llm_calls": 0
   },
   {
@@ -4550,7 +4550,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": true,
-   "brier_score": 0.0279,
+   "brier_score": 0.0497,
    "llm_calls": 0
   },
   {
@@ -4563,7 +4563,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": true,
-   "brier_score": 0.4559,
+   "brier_score": 0.0497,
    "llm_calls": 0
   },
   {
@@ -4571,12 +4571,12 @@
    "mode": "D",
    "seed": 19,
    "true_fault": "db_fault",
-   "recovery_time": 12,
-   "availability": 0.9292,
-   "unnecessary_actions": 1,
-   "correct_diagnosis": false,
+   "recovery_time": 8,
+   "availability": 0.9772,
+   "unnecessary_actions": 0,
+   "correct_diagnosis": true,
    "escalated_to_human": true,
-   "brier_score": 1.6171,
+   "brier_score": 0.658,
    "llm_calls": 0
   }
  ]

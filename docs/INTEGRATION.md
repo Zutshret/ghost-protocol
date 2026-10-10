@@ -19,17 +19,12 @@ what changed in `shared/`.
 | Feature levels | `simulator.faults.level_of` (Person A) |
 | Runbook rules | `simulator.runbook.runbook_matches` (Person A) |
 | Safety validator | `simulator.validator.validate` (Person A), hard block at 12 s lag |
-| Belief update, pooling, entropy, Brier, act/probe/escalate rule | **stand-ins** in `standins/intelligence.py`, until A4–A6 land |
+| Belief engine, `log_pool`, `entropy`, `brier`, `failed_action_update` | `intelligence.beliefs` (Person A, A4/A5) |
+| `decide` (act/probe/escalate), `escalation_options` | `intelligence.decision` (Person A, A6) |
 
-Set `GHOST_STANDINS=1` to force every stand-in, for example for a safe demo.
-
-When A5/A6 land, the engine expects:
-
-- `intelligence/beliefs.py` → `class BeliefEngine` with `update(agent_id, belief, levels)`.
-  This one is picked up automatically.
-- The pool, entropy, Brier, decision rule and escalation options are swapped in
-  one line each in `backend/adapters.py`. Their signatures are in
-  `standins/intelligence.py`.
+`standins/` is kept only as a fallback: set `GHOST_STANDINS=1` to force every
+stand-in, for example for a safe demo. `tests/test_person_b.py` uses it so those
+tests don't depend on the tuning in `likelihoods.json`.
 
 The engine reads `sim.state` and the dict returned by `step()`
 (`error_rate`, `latency_ms`, `customer_lockout`), and it calls
@@ -37,26 +32,23 @@ The engine reads `sim.state` and the dict returned by `step()`
 recruited Network Analyst, `observe()` raises `KeyError`, so the engine builds
 that agent's observation from `upstream_timeouts` in the state.
 
-## Remaining stand-in choices to revisit with A4–A6
+## Choices on Person B's side
 
-- The likelihood tables are hand-set from the fault signatures, not estimated
-  from runs (that is A4).
-- Mode B's decision rule uses P ≥ 0.75 for safe actions and P ≥ 0.9 for risky
-  ones, with at most 2 probes before escalating. Mode C needs a unanimous vote
-  for risky actions.
+- Mode C needs a unanimous vote for risky actions (2/3 otherwise). Gateway and
+  Database veto block_traffic / failover_db unless they are at least 85% sure.
 - The evaluation uses a scripted "oracle" human, who approves the correct fix
   when it is offered.
 - Mode D applies the first matching runbook rule even when rules conflict, so
   the S2 misfire is visible. Set `escalate_on_conflict=True` to change that.
 
-## Numbers on Person A's simulator, runbook and validator (20 seeds, `eval/results/compare.json`)
+## Numbers on the full real stack (20 seeds, `eval/results/compare.json`)
 
 | | A runbook | B aggregator | C negotiation | D hybrid→C |
 |---|---|---|---|---|
 | S1 correct | 100% | 100% | 100% | 100% |
 | S2 correct | 75% | 100% | 100% | 75% |
 | S3 correct | 100% | 100% | 100% | 100% |
-| S5 correct / asked human | 0% / 0% (never recovers) | 100% / 100% | 100% / 100% | 70% / 100% |
+| S5 correct / asked human | 0% / 0% (never recovers) | 95% / 100% | 95% / 100% | 85% / 100% |
 
 Ablation (`eval/results/compare_ablate_database.json`): removing the Database
 agent's evidence makes S1 need a human 90–95% of the time (versus 0–10%), and
