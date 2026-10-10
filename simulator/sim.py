@@ -36,6 +36,7 @@ from simulator.faults import (
     FAULT_PEAKS,
     FEATURE_MAX,
     RATE_FEATURES,
+    SMALL_IS_ABNORMAL,
     level_of,
 )
 from simulator.scenarios import SCENARIOS, ScenarioSpec, custom_scenario
@@ -214,7 +215,10 @@ class Simulator:
         levels = {f: level_of(f, v) for f, v in values.items()}
         logs = []
         for f in features:
-            line = f"{_LOG_PREFIX[levels[f]]} " + _LOG_TEMPLATE[f].format(values[f])
+            shown = levels[f]
+            if f in SMALL_IS_ABNORMAL:  # a recent deploy (small number) deserves the loud label
+                shown = {Level.LOW: Level.HIGH, Level.MEDIUM: Level.MEDIUM, Level.HIGH: Level.LOW}[shown]
+            line = f"{_LOG_PREFIX[shown]} " + _LOG_TEMPLATE[f].format(values[f])
             if f in self.verified:
                 line += " [verified by probe]"
             logs.append(line)
@@ -251,9 +255,18 @@ class Simulator:
                 "lockout_penalty": self.lockout_penalty,
                 "availability": self.availability_history[-1],
                 "healthy_streak": float(self.healthy_streak),
+                # Names Person B's backend reads (overall health of the whole system):
+                "error_rate": self.edge_error_true,
+                "latency_ms": self.latency_true,  # replaces the per-feature value in this dict
+                "customer_lockout": self.lockout_penalty,
             }
         )
         return state
+
+    @property
+    def state(self) -> dict[str, float]:
+        """Same as `truth` (kept for Person B's backend, which looks for `sim.state`)."""
+        return self.truth
 
     def availability(self) -> float:
         """Average availability over the full 30-tick window.
