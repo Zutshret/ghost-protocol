@@ -42,7 +42,7 @@ export default function App() {
   const { runId, messages, derived, meta, connected, start, stop, answer } = useRun();
   const [tab, setTab] = useState<"live" | "results">("live");
   const [cfg, setCfg] = useState<RunConfig>({
-    scenario: "S2", mode: "D", seed: 1, use_llm: false, tick_delay: 0.8,
+    scenario: "S2", mode: "D", seed: 2, use_llm: false, tick_delay: 0.8,
     agents_mode_for_d: "C", escalate_on_conflict: false, ablate: null,
   });
   const [selected, setSelected] = useState<Msg | null>(null);
