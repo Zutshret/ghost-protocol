@@ -1,0 +1,634 @@
+{
+ "meta": {
+  "how": "counted from simulator runs (plain scenarios, no decoys), add-one smoothing",
+  "train_seeds": [
+   1000,
+   1199
+  ],
+  "window_ticks": [
+   7,
+   12
+  ],
+  "runs_per_cause": 200
+ },
+ "counts": {
+  "bad_deploy": {
+   "request_rate": {
+    "low": 1149,
+    "medium": 17,
+    "high": 34
+   },
+   "edge_error_rate": {
+    "low": 10,
+    "medium": 15,
+    "high": 1175
+   },
+   "upstream_timeouts": {
+    "low": 1136,
+    "medium": 21,
+    "high": 43
+   },
+   "payment_error_rate": {
+    "low": 6,
+    "medium": 11,
+    "high": 1183
+   },
+   "queue_depth": {
+    "low": 11,
+    "medium": 1165,
+    "high": 24
+   },
+   "latency_ms": {
+    "low": 20,
+    "medium": 1141,
+    "high": 39
+   },
+   "replication_lag_s": {
+    "low": 1150,
+    "medium": 26,
+    "high": 24
+   },
+   "slow_queries": {
+    "low": 1153,
+    "medium": 27,
+    "high": 20
+   },
+   "lock_waits": {
+    "low": 1160,
+    "medium": 22,
+    "high": 18
+   },
+   "traffic_anomaly": {
+    "low": 1169,
+    "medium": 12,
+    "high": 19
+   },
+   "failed_logins": {
+    "low": 1153,
+    "medium": 14,
+    "high": 33
+   },
+   "suspicious_sources": {
+    "low": 1140,
+    "medium": 26,
+    "high": 34
+   },
+   "minutes_since_deploy": {
+    "low": 1142,
+    "medium": 7,
+    "high": 51
+   },
+   "canary_error_rate": {
+    "low": 7,
+    "medium": 19,
+    "high": 1174
+   },
+   "config_changes": {
+    "low": 50,
+    "medium": 1144,
+    "high": 6
+   }
+  },
+  "attack": {
+   "request_rate": {
+    "low": 12,
+    "medium": 17,
+    "high": 1171
+   },
+   "edge_error_rate": {
+    "low": 10,
+    "medium": 15,
+    "high": 1175
+   },
+   "upstream_timeouts": {
+    "low": 3,
+    "medium": 30,
+    "high": 1167
+   },
+   "payment_error_rate": {
+    "low": 6,
+    "medium": 1150,
+    "high": 44
+   },
+   "queue_depth": {
+    "low": 11,
+    "medium": 686,
+    "high": 503
+   },
+   "latency_ms": {
+    "low": 20,
+    "medium": 684,
+    "high": 496
+   },
+   "replication_lag_s": {
+    "low": 1150,
+    "medium": 26,
+    "high": 24
+   },
+   "slow_queries": {
+    "low": 1153,
+    "medium": 27,
+    "high": 20
+   },
+   "lock_waits": {
+    "low": 1160,
+    "medium": 22,
+    "high": 18
+   },
+   "traffic_anomaly": {
+    "low": 13,
+    "medium": 25,
+    "high": 1162
+   },
+   "failed_logins": {
+    "low": 6,
+    "medium": 14,
+    "high": 1180
+   },
+   "suspicious_sources": {
+    "low": 10,
+    "medium": 27,
+    "high": 1163
+   },
+   "minutes_since_deploy": {
+    "low": 0,
+    "medium": 7,
+    "high": 1193
+   },
+   "canary_error_rate": {
+    "low": 1143,
+    "medium": 19,
+    "high": 38
+   },
+   "config_changes": {
+    "low": 1200,
+    "medium": 0,
+    "high": 0
+   }
+  },
+  "db_fault": {
+   "request_rate": {
+    "low": 1149,
+    "medium": 17,
+    "high": 34
+   },
+   "edge_error_rate": {
+    "low": 10,
+    "medium": 31,
+    "high": 1159
+   },
+   "upstream_timeouts": {
+    "low": 1136,
+    "medium": 21,
+    "high": 43
+   },
+   "payment_error_rate": {
+    "low": 6,
+    "medium": 11,
+    "high": 1183
+   },
+   "queue_depth": {
+    "low": 11,
+    "medium": 50,
+    "high": 1139
+   },
+   "latency_ms": {
+    "low": 20,
+    "medium": 27,
+    "high": 1153
+   },
+   "replication_lag_s": {
+    "low": 14,
+    "medium": 33,
+    "high": 1153
+   },
+   "slow_queries": {
+    "low": 17,
+    "medium": 29,
+    "high": 1154
+   },
+   "lock_waits": {
+    "low": 12,
+    "medium": 59,
+    "high": 1129
+   },
+   "traffic_anomaly": {
+    "low": 1169,
+    "medium": 12,
+    "high": 19
+   },
+   "failed_logins": {
+    "low": 1153,
+    "medium": 14,
+    "high": 33
+   },
+   "suspicious_sources": {
+    "low": 1140,
+    "medium": 26,
+    "high": 34
+   },
+   "minutes_since_deploy": {
+    "low": 0,
+    "medium": 7,
+    "high": 1193
+   },
+   "canary_error_rate": {
+    "low": 1143,
+    "medium": 19,
+    "high": 38
+   },
+   "config_changes": {
+    "low": 1200,
+    "medium": 0,
+    "high": 0
+   }
+  },
+  "dependency_timeout": {
+   "request_rate": {
+    "low": 1149,
+    "medium": 17,
+    "high": 34
+   },
+   "edge_error_rate": {
+    "low": 10,
+    "medium": 663,
+    "high": 527
+   },
+   "upstream_timeouts": {
+    "low": 3,
+    "medium": 21,
+    "high": 1176
+   },
+   "payment_error_rate": {
+    "low": 6,
+    "medium": 1155,
+    "high": 39
+   },
+   "queue_depth": {
+    "low": 11,
+    "medium": 319,
+    "high": 870
+   },
+   "latency_ms": {
+    "low": 20,
+    "medium": 16,
+    "high": 1164
+   },
+   "replication_lag_s": {
+    "low": 1150,
+    "medium": 26,
+    "high": 24
+   },
+   "slow_queries": {
+    "low": 1153,
+    "medium": 27,
+    "high": 20
+   },
+   "lock_waits": {
+    "low": 1160,
+    "medium": 22,
+    "high": 18
+   },
+   "traffic_anomaly": {
+    "low": 1169,
+    "medium": 12,
+    "high": 19
+   },
+   "failed_logins": {
+    "low": 1153,
+    "medium": 14,
+    "high": 33
+   },
+   "suspicious_sources": {
+    "low": 1140,
+    "medium": 26,
+    "high": 34
+   },
+   "minutes_since_deploy": {
+    "low": 0,
+    "medium": 7,
+    "high": 1193
+   },
+   "canary_error_rate": {
+    "low": 1143,
+    "medium": 19,
+    "high": 38
+   },
+   "config_changes": {
+    "low": 1200,
+    "medium": 0,
+    "high": 0
+   }
+  }
+ },
+ "likelihood": {
+  "bad_deploy": {
+   "request_rate": {
+    "low": 0.9559434746467166,
+    "medium": 0.014962593516209476,
+    "high": 0.029093931837073983
+   },
+   "edge_error_rate": {
+    "low": 0.00914380714879468,
+    "medium": 0.013300083125519535,
+    "high": 0.9775561097256857
+   },
+   "upstream_timeouts": {
+    "low": 0.9451371571072319,
+    "medium": 0.01828761429758936,
+    "high": 0.03657522859517872
+   },
+   "payment_error_rate": {
+    "low": 0.005818786367414797,
+    "medium": 0.00997506234413965,
+    "high": 0.9842061512884456
+   },
+   "queue_depth": {
+    "low": 0.00997506234413965,
+    "medium": 0.969243557772236,
+    "high": 0.020781379883624274
+   },
+   "latency_ms": {
+    "low": 0.017456359102244388,
+    "medium": 0.9492934330839568,
+    "high": 0.03325020781379884
+   },
+   "replication_lag_s": {
+    "low": 0.9567747298420615,
+    "medium": 0.022443890274314215,
+    "high": 0.020781379883624274
+   },
+   "slow_queries": {
+    "low": 0.9592684954280964,
+    "medium": 0.023275145469659187,
+    "high": 0.017456359102244388
+   },
+   "lock_waits": {
+    "low": 0.9650872817955112,
+    "medium": 0.019118869492934332,
+    "high": 0.015793848711554447
+   },
+   "traffic_anomaly": {
+    "low": 0.972568578553616,
+    "medium": 0.010806317539484621,
+    "high": 0.01662510390689942
+   },
+   "failed_logins": {
+    "low": 0.9592684954280964,
+    "medium": 0.012468827930174564,
+    "high": 0.02826267664172901
+   },
+   "suspicious_sources": {
+    "low": 0.9484621778886118,
+    "medium": 0.022443890274314215,
+    "high": 0.029093931837073983
+   },
+   "minutes_since_deploy": {
+    "low": 0.9501246882793017,
+    "medium": 0.006650041562759767,
+    "high": 0.043225270157938485
+   },
+   "canary_error_rate": {
+    "low": 0.006650041562759767,
+    "medium": 0.01662510390689942,
+    "high": 0.9767248545303409
+   },
+   "config_changes": {
+    "low": 0.04239401496259352,
+    "medium": 0.9517871986699917,
+    "high": 0.005818786367414797
+   }
+  },
+  "attack": {
+   "request_rate": {
+    "low": 0.010806317539484621,
+    "medium": 0.014962593516209476,
+    "high": 0.9742310889443059
+   },
+   "edge_error_rate": {
+    "low": 0.00914380714879468,
+    "medium": 0.013300083125519535,
+    "high": 0.9775561097256857
+   },
+   "upstream_timeouts": {
+    "low": 0.0033250207813798837,
+    "medium": 0.025768911055694097,
+    "high": 0.970906068162926
+   },
+   "payment_error_rate": {
+    "low": 0.005818786367414797,
+    "medium": 0.9567747298420615,
+    "high": 0.03740648379052369
+   },
+   "queue_depth": {
+    "low": 0.00997506234413965,
+    "medium": 0.571072319201995,
+    "high": 0.41895261845386533
+   },
+   "latency_ms": {
+    "low": 0.017456359102244388,
+    "medium": 0.5694098088113051,
+    "high": 0.41313383208645055
+   },
+   "replication_lag_s": {
+    "low": 0.9567747298420615,
+    "medium": 0.022443890274314215,
+    "high": 0.020781379883624274
+   },
+   "slow_queries": {
+    "low": 0.9592684954280964,
+    "medium": 0.023275145469659187,
+    "high": 0.017456359102244388
+   },
+   "lock_waits": {
+    "low": 0.9650872817955112,
+    "medium": 0.019118869492934332,
+    "high": 0.015793848711554447
+   },
+   "traffic_anomaly": {
+    "low": 0.011637572734829594,
+    "medium": 0.021612635078969242,
+    "high": 0.9667497921862012
+   },
+   "failed_logins": {
+    "low": 0.005818786367414797,
+    "medium": 0.012468827930174564,
+    "high": 0.9817123857024106
+   },
+   "suspicious_sources": {
+    "low": 0.00914380714879468,
+    "medium": 0.023275145469659187,
+    "high": 0.9675810473815462
+   },
+   "minutes_since_deploy": {
+    "low": 0.0008312551953449709,
+    "medium": 0.006650041562759767,
+    "high": 0.9925187032418953
+   },
+   "canary_error_rate": {
+    "low": 0.9509559434746467,
+    "medium": 0.01662510390689942,
+    "high": 0.032418952618453865
+   },
+   "config_changes": {
+    "low": 0.99833748960931,
+    "medium": 0.0008312551953449709,
+    "high": 0.0008312551953449709
+   }
+  },
+  "db_fault": {
+   "request_rate": {
+    "low": 0.9559434746467166,
+    "medium": 0.014962593516209476,
+    "high": 0.029093931837073983
+   },
+   "edge_error_rate": {
+    "low": 0.00914380714879468,
+    "medium": 0.02660016625103907,
+    "high": 0.9642560266001663
+   },
+   "upstream_timeouts": {
+    "low": 0.9451371571072319,
+    "medium": 0.01828761429758936,
+    "high": 0.03657522859517872
+   },
+   "payment_error_rate": {
+    "low": 0.005818786367414797,
+    "medium": 0.00997506234413965,
+    "high": 0.9842061512884456
+   },
+   "queue_depth": {
+    "low": 0.00997506234413965,
+    "medium": 0.04239401496259352,
+    "high": 0.9476309226932669
+   },
+   "latency_ms": {
+    "low": 0.017456359102244388,
+    "medium": 0.023275145469659187,
+    "high": 0.9592684954280964
+   },
+   "replication_lag_s": {
+    "low": 0.012468827930174564,
+    "medium": 0.02826267664172901,
+    "high": 0.9592684954280964
+   },
+   "slow_queries": {
+    "low": 0.014962593516209476,
+    "medium": 0.02493765586034913,
+    "high": 0.9600997506234414
+   },
+   "lock_waits": {
+    "low": 0.010806317539484621,
+    "medium": 0.04987531172069826,
+    "high": 0.9393183707398172
+   },
+   "traffic_anomaly": {
+    "low": 0.972568578553616,
+    "medium": 0.010806317539484621,
+    "high": 0.01662510390689942
+   },
+   "failed_logins": {
+    "low": 0.9592684954280964,
+    "medium": 0.012468827930174564,
+    "high": 0.02826267664172901
+   },
+   "suspicious_sources": {
+    "low": 0.9484621778886118,
+    "medium": 0.022443890274314215,
+    "high": 0.029093931837073983
+   },
+   "minutes_since_deploy": {
+    "low": 0.0008312551953449709,
+    "medium": 0.006650041562759767,
+    "high": 0.9925187032418953
+   },
+   "canary_error_rate": {
+    "low": 0.9509559434746467,
+    "medium": 0.01662510390689942,
+    "high": 0.032418952618453865
+   },
+   "config_changes": {
+    "low": 0.99833748960931,
+    "medium": 0.0008312551953449709,
+    "high": 0.0008312551953449709
+   }
+  },
+  "dependency_timeout": {
+   "request_rate": {
+    "low": 0.9559434746467166,
+    "medium": 0.014962593516209476,
+    "high": 0.029093931837073983
+   },
+   "edge_error_rate": {
+    "low": 0.00914380714879468,
+    "medium": 0.5519534497090607,
+    "high": 0.4389027431421446
+   },
+   "upstream_timeouts": {
+    "low": 0.0033250207813798837,
+    "medium": 0.01828761429758936,
+    "high": 0.9783873649210307
+   },
+   "payment_error_rate": {
+    "low": 0.005818786367414797,
+    "medium": 0.9609310058187863,
+    "high": 0.03325020781379884
+   },
+   "queue_depth": {
+    "low": 0.00997506234413965,
+    "medium": 0.2660016625103907,
+    "high": 0.7240232751454697
+   },
+   "latency_ms": {
+    "low": 0.017456359102244388,
+    "medium": 0.014131338320864505,
+    "high": 0.9684123025768911
+   },
+   "replication_lag_s": {
+    "low": 0.9567747298420615,
+    "medium": 0.022443890274314215,
+    "high": 0.020781379883624274
+   },
+   "slow_queries": {
+    "low": 0.9592684954280964,
+    "medium": 0.023275145469659187,
+    "high": 0.017456359102244388
+   },
+   "lock_waits": {
+    "low": 0.9650872817955112,
+    "medium": 0.019118869492934332,
+    "high": 0.015793848711554447
+   },
+   "traffic_anomaly": {
+    "low": 0.972568578553616,
+    "medium": 0.010806317539484621,
+    "high": 0.01662510390689942
+   },
+   "failed_logins": {
+    "low": 0.9592684954280964,
+    "medium": 0.012468827930174564,
+    "high": 0.02826267664172901
+   },
+   "suspicious_sources": {
+    "low": 0.9484621778886118,
+    "medium": 0.022443890274314215,
+    "high": 0.029093931837073983
+   },
+   "minutes_since_deploy": {
+    "low": 0.0008312551953449709,
+    "medium": 0.006650041562759767,
+    "high": 0.9925187032418953
+   },
+   "canary_error_rate": {
+    "low": 0.9509559434746467,
+    "medium": 0.01662510390689942,
+    "high": 0.032418952618453865
+   },
+   "config_changes": {
+    "low": 0.99833748960931,
+    "medium": 0.0008312551953449709,
+    "high": 0.0008312551953449709
+   }
+  }
+ }
+}
