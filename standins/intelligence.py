@@ -130,7 +130,7 @@ RISKY = {
     Action.FAILOVER_DB: "risks data consistency (replica may be behind)",
     Action.BLOCK_TRAFFIC: "can lock out real customers",
 }
-FAILOVER_HARD_LAG_S = 20.0
+FAILOVER_HARD_LAG_S = 12.0  # = Simulator.CONSISTENCY_LAG_LIMIT
 
 
 @dataclass

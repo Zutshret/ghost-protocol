@@ -50,6 +50,10 @@ def oracle_human(content: dict, engine: "IncidentEngine") -> dict:
     return {"decision": "reject", "action": "noop", "note": "oracle human (eval)"}
 
 
+def lockout(state: dict[str, float]) -> float:
+    return state.get("customer_lockout", state.get("lockout_penalty", 0.0))
+
+
 def badness(state: dict[str, float]) -> float:
     err = state.get("error_rate", max(state.get("edge_error_rate", 0), state.get("payment_error_rate", 0)))
     return max(err / 0.02, state.get("latency_ms", 0) / 300)
@@ -107,7 +111,7 @@ class IncidentEngine:
                         levels[f] = ad.level_of(f, self.state[f])
                     except KeyError:
                         pass
-            if svc == "auth" and self.state.get("customer_lockout", 0) > 0:
+            if svc == "auth" and lockout(self.state) > 0:
                 levels["customer_lockout"] = Level.HIGH
             n_high = sum(l == Level.HIGH for l in levels.values())
             n_med = sum(l == Level.MEDIUM for l in levels.values())
@@ -150,12 +154,13 @@ class IncidentEngine:
             if self.should_stop():
                 break
             action = Action.NOOP
+            self.human_approved = False
             if self.phase not in ("resolved",):
                 action = self._decide()
-            self.state = dict(self.sim.step(action))
+            self.state = dict(self._step(action))
             self.tick = getattr(self.sim, "tick", self.tick + 1)
             err = self.state.get("error_rate", max(self.state.get("edge_error_rate", 0), self.state.get("payment_error_rate", 0)))
-            avail.append(max(0.0, 1 - err - self.state.get("customer_lockout", 0)))
+            avail.append(max(0.0, 1 - err - lockout(self.state)))
             if self.recovered_at is None and self.phase != "monitoring" and self.sim.is_recovered():
                 self.recovered_at = self.tick
                 self.phase, self.verifying = "resolved", None
@@ -164,7 +169,7 @@ class IncidentEngine:
             self.publish(MessageType.TELEMETRY, "simulator", {
                 "phase": self.phase, "services": self._services(), "availability": avail[-1],
                 "error_rate": round(err, 4), "latency_ms": round(self.state.get("latency_ms", 0), 1),
-                "lockout": self.state.get("customer_lockout", 0),
+                "lockout": lockout(self.state),
             })
             if self.tick_delay:
                 time.sleep(self.tick_delay)
@@ -186,6 +191,14 @@ class IncidentEngine:
                      f"Run finished. Recovery {metrics.recovery_time} ticks, availability {metrics.availability:.1%}, "
                      f"unnecessary actions {metrics.unnecessary_actions}, correct diagnosis {metrics.correct_diagnosis}.")
         return metrics
+
+    def _step(self, action: Action) -> dict[str, float]:
+        if self.human_approved:
+            try:  # Person A's simulator records that a human accepted the risk
+                return self.sim.step(action, approved=True)
+            except TypeError:
+                pass
+        return self.sim.step(action)
 
     # -------------------------------------------------------------- routing
     def _decide(self) -> Action:
@@ -359,6 +372,7 @@ class IncidentEngine:
             return Action.NOOP
         if self.decision_belief is None:
             self.decision_belief = belief
+        self.human_approved = True
         return self._apply(action, "human", [esc.id], f"Human-approved {action.value}. Validator: {verdict.reason}.")
 
 

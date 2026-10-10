@@ -48,4 +48,18 @@ runbook_matches = _si.runbook_matches
 validate = _si.validate
 decide = _si.decide
 escalation_options = _si.escalation_options
-level_of = to_level
+
+
+def _pick_level_of():
+    """Person A's simulator.faults.level_of keeps thresholds in sync with their simulator."""
+    if not FORCE_STANDINS:
+        try:
+            from simulator.faults import level_of as real_level_of  # type: ignore
+
+            return real_level_of
+        except ImportError:
+            pass
+    return to_level
+
+
+level_of = _pick_level_of()
