@@ -39,6 +39,7 @@ export interface Derived {
   availability: number[];
   lastAction: Msg | null;
   byId: Map<number, Msg>;
+  agntcy: { enabled: boolean; directory?: string; cids?: Record<string, string>; trace_id?: string | null } | null;
 }
 
 export function useRun() {
@@ -186,7 +187,8 @@ function derive(messages: Msg[], roster: AgentSpec[]): Derived {
     spec,
     active: views.get(spec.id)?.active ?? false,
   }));
-  return { start, tick, services, mode, agents, escalation, metrics, error, availability, lastAction, byId };
+  const agntcy = start?.content.agntcy ?? null;
+  return { start, tick, services, mode, agents, escalation, metrics, error, availability, lastAction, byId, agntcy };
 }
 
 export type EscalationOptions = Option[];

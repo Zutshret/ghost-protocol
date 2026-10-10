@@ -6,6 +6,7 @@ it) and logged to the ledger as a RECRUIT message.
 
 from __future__ import annotations
 
+from agents import agntcy
 from agents.agent_base import AgentSpec, find_by_capability, load_registry
 from shared.types import Belief, Hypothesis, Level
 
@@ -54,10 +55,28 @@ def recruitment_needed(beliefs: list[Belief], team_ids: set[str]) -> tuple[Agent
         trigger = f"no agent is confident (best = {best_conf:.2f} < {NO_ONE_CONFIDENT})"
     if trigger is None:
         return None
-    for spec in find_by_capability(HYPOTHESIS_CAPABILITY[Hypothesis.DEPENDENCY_TIMEOUT]):
-        if spec.id not in team_ids:
-            return spec, f"{trigger}; registry lookup for capability 'dependency_timeout_analysis' matched {spec.name}"
-    return None
+    capability = HYPOTHESIS_CAPABILITY[Hypothesis.DEPENDENCY_TIMEOUT]
+    spec, where = find_specialist(capability, team_ids)
+    if spec is None:
+        return None
+    return spec, f"{trigger}; {where} for capability '{capability}' matched {spec.name}"
+
+
+def find_specialist(capability: str, exclude: set[str]) -> tuple[AgentSpec | None, str]:
+    """AGNTCY Directory first (when GHOST_AGNTCY=1), registry.json as the fallback."""
+    registry = load_registry()
+    hits = agntcy.lookup(capability)
+    if hits is not None:
+        for agent_id, cid in hits:
+            if agent_id in registry and agent_id not in exclude:
+                return registry[agent_id], f"AGNTCY Directory search (record {cid or 'unknown CID'})"
+        if hits:
+            return None, "AGNTCY Directory search"
+    where = "registry.json lookup" + (" (AGNTCY Directory unavailable)" if agntcy.enabled() else "")
+    for spec in find_by_capability(capability):
+        if spec.id not in exclude:
+            return spec, where
+    return None, where
 
 
 def _abnormal(feature: str, level: Level | None) -> bool:
