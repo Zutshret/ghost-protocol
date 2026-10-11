@@ -47,7 +47,7 @@ class RunRequest(BaseModel):
     use_llm: bool = False
     tick_delay: float = 0.8
     agents_mode_for_d: Mode = Mode.C
-    escalate_on_conflict: bool = False
+    escalate_on_conflict: bool = True
     ablate: str | None = None
 
 

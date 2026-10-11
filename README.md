@@ -34,9 +34,9 @@ and open http://localhost:5173 (it proxies the backend).
 Modes: **A** runbook only · **B** agents + central aggregator · **C** agents
 negotiate peer to peer · **D** runbook first, agents when the router says so.
 
-Demo tip: S2, Mode D (then negotiation C), seed 2 (also 11, 12, 18, 22) shows the runbook blocking
-traffic wrongly, the switch to agent mode, Security disagreeing with everyone,
-and the team agreeing on a rollback. S5, Mode C, seed 1 shows the human approval panel.
+Demo tip: S2, seed 2 (also 11, 12, 18, 22). Run Mode A first: the runbook blocks traffic wrongly and
+recovers late. Then Mode D: the router sees two runbook rules match and hands over to the agents at once,
+and the team agrees on a rollback. S5, Mode C, seed 1 shows the human approval panel.
 
 ## AGNTCY (optional)
 

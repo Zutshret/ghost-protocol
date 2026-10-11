@@ -71,7 +71,7 @@ class IncidentEngine:
     human: Human = oracle_human
     tick_delay: float = 0.0
     agents_mode_for_d: Mode = Mode.B
-    escalate_on_conflict: bool = False
+    escalate_on_conflict: bool = True  # Mode D hands to the agents when two runbook rules match
     ablate: str | None = None
     run_id: str = field(default_factory=lambda: uuid.uuid4().hex[:8])
     should_stop: Callable[[], bool] = lambda: False

@@ -38,8 +38,9 @@ that agent's observation from `upstream_timeouts` in the state.
   Database veto block_traffic / failover_db unless they are at least 85% sure.
 - The evaluation uses a scripted "oracle" human, who approves the correct fix
   when it is offered.
-- Mode D applies the first matching runbook rule even when rules conflict, so
-  the S2 misfire is visible. Set `escalate_on_conflict=True` to change that.
+- Mode D hands over to the agents when two runbook rules match (`escalate_on_conflict`,
+  on by default). With it off, Mode D applies the first matching rule and reproduces the runbook's
+  S2 misfire; `eval/results/REPORT.md` section 6 reports both.
 
 ## Numbers on the full real stack (20 seeds, `eval/results/compare.json`)
 
