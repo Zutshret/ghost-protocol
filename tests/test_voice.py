@@ -87,6 +87,52 @@ def test_llm_changes_words_not_decisions(fake_llm, scenario, mode, seed):
     assert not any(x.content.get("event") == "summary" for x in off.bus.history)
 
 
+@pytest.fixture
+def fake_rationale(monkeypatch):
+    """Pretend the evidence-reading LLM answers with whatever `reply[0]` says (levels are all 'low')."""
+    from agents import evidence
+
+    reply = ["I see nothing unusual."]
+    monkeypatch.setattr(voice, "llm_available", lambda: True)
+
+    def fake_ask(prompt, schema, system="", max_tokens=0):
+        if schema is evidence.Extraction:
+            return evidence.Extraction(levels={}, rationale=reply[0])
+        return None
+
+    monkeypatch.setattr("agents.evidence.ask_json", fake_ask)
+    return reply
+
+
+def _agent_rationale(use_llm=True):
+    """Run one agent's evidence extraction on a real incident observation."""
+    eng = IncidentEngine("S2", "C", 2, use_llm=use_llm)
+    eng.run()
+    agent = eng.team[0]
+    return agent.rationale, agent.extraction_info
+
+
+def test_evidence_rationale_with_invented_number_is_replaced(fake_rationale):
+    fake_rationale[0] = "Latency is 99999 ms, which points to a db_fault."
+    text, info = _agent_rationale()
+    assert "99999" not in text
+    assert info.get("rationale_rejected") is True
+
+
+def test_evidence_rationale_recommending_an_action_is_replaced(fake_rationale):
+    fake_rationale[0] = "This is clearly a bad deploy, so do a failover_db right now."
+    text, info = _agent_rationale()
+    assert "failover_db" not in text
+    assert info.get("rationale_rejected") is True
+
+
+def test_evidence_rationale_may_name_a_cause_without_numbers(fake_rationale):
+    fake_rationale[0] = "These signals look like a bad deploy."
+    text, info = _agent_rationale()
+    assert text.startswith("These signals look like a bad deploy.")
+    assert info.get("source") == "llm"
+
+
 def test_llm_helper_throttle_and_rate_limit_parsing():
     class Boom(Exception):
         pass

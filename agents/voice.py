@@ -76,15 +76,22 @@ def _numbers(s: str) -> set[str]:
     return {n.rstrip("0").rstrip(".") if "." in n else n for n in re.findall(r"\d+(?:\.\d+)?", s)}
 
 
-def faithful(text: str, facts: dict[str, Any]) -> bool:
-    """True if the text only uses numbers, causes and actions that appear in the facts."""
+def faithful(text: str, facts: dict[str, Any], *, allow_causes: bool = False) -> bool:
+    """True if the text only uses numbers, causes and actions that appear in the facts.
+
+    `allow_causes=True` is for an agent's own reading of its signals ("this points to
+    db_fault"): naming a cause is its job, so only numbers and actions are checked.
+    Whether that cause is right is decided by the belief engine, never by this text.
+    """
     if not text or len(text.split()) > MAX_WORDS:
         return False
     blob = json.dumps(facts, default=str)
     if not _numbers(text) <= _numbers(blob):
         return False
     allowed, said = _normalise(blob), _normalise(text)
-    terms = [_normalise(h.value) for h in Hypothesis] + [_normalise(a.value) for a in Action]
+    terms = [_normalise(a.value) for a in Action]
+    if not allow_causes:
+        terms += [_normalise(h.value) for h in Hypothesis]
     return all(t in allowed for t in terms if t in said)
 
 
@@ -118,6 +125,12 @@ def say(
     with _lock:
         _stats["llm"] += 1
     return text
+
+
+def count_rejected() -> None:
+    """Record an LLM line that failed the guard somewhere outside `say` (e.g. evidence rationales)."""
+    with _lock:
+        _stats["rejected"] += 1
 
 
 def _template(fallback: str) -> str:
