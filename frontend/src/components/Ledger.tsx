@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { SENDER_NAME, TYPE_LABEL } from "../labels";
 import { SYSTEM_COLOR, type AgentSpec, type Msg } from "../types";
 
 const TYPE_STYLE: Record<string, string> = {
@@ -22,11 +23,11 @@ export function colorFor(sender: string, roster: Map<string, AgentSpec>) {
 }
 
 export function nameFor(sender: string, roster: Map<string, AgentSpec>) {
-  return roster.get(sender)?.name ?? sender;
+  return roster.get(sender)?.name ?? SENDER_NAME[sender] ?? sender;
 }
 
 export function TypeBadge({ type }: { type: string }) {
-  return <span className={`text-[9px] uppercase tracking-wide px-1.5 py-0.5 rounded ${TYPE_STYLE[type] ?? ""}`}>{type.replace("_", " ")}</span>;
+  return <span className={`text-[9px] uppercase tracking-wide px-1.5 py-0.5 rounded ${TYPE_STYLE[type] ?? ""}`}>{TYPE_LABEL[type] ?? type.replace("_", " ")}</span>;
 }
 
 interface Props {
@@ -92,7 +93,7 @@ export default function Ledger({ messages, roster, selected, onSelect, agentFilt
               <span className="w-24 shrink-0 text-[11px] font-semibold truncate pt-0.5" style={{ color: colorFor(m.sender, roster) }}>
                 {nameFor(m.sender, roster).replace(" Agent", "")}
               </span>
-              <span className="w-20 shrink-0"><TypeBadge type={m.type} /></span>
+              <span className="w-24 shrink-0"><TypeBadge type={m.type} /></span>
               <span className={`text-[11px] leading-snug ${important ? "text-slate-100" : "text-slate-400"} line-clamp-2`}>
                 {m.rationale || JSON.stringify(m.content).slice(0, 120)}
               </span>
