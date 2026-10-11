@@ -1,5 +1,5 @@
-import { Background, Handle, Position, ReactFlow, type Edge, type Node, type NodeProps } from "@xyflow/react";
-import { useMemo } from "react";
+import { Background, Handle, Position, ReactFlow, type Edge, type Node, type NodeProps, type ReactFlowInstance } from "@xyflow/react";
+import { useEffect, useMemo, useRef } from "react";
 import type { Health, ServiceState } from "../types";
 
 const HEALTH: Record<Health, { box: string; dot: string; label: string; text: string }> = {
@@ -74,7 +74,7 @@ function ServiceNode({ data }: NodeProps<Node<SvcData>>) {
         <span className="text-xl font-semibold capitalize text-slate-50">{data.name}</span>
         <span className={`ml-auto text-base font-semibold ${h.text}`}>{h.label}</span>
       </div>
-      <div className="mt-2.5 space-y-1.5">
+      <div className="mt-2.5 min-h-[3.6rem] space-y-1.5">
         {shown.length ? shown.map((k) => (
           <div key={k} className="flex justify-between text-base">
             <span className="text-slate-400">{METRIC[k]?.label ?? k}</span>
@@ -99,7 +99,16 @@ function ServiceNode({ data }: NodeProps<Node<SvcData>>) {
 
 const nodeTypes = { svc: ServiceNode };
 
+const FIT = { padding: 0.04, maxZoom: 1.45 };
+
 export default function ServiceGraph({ services }: { services: Record<string, ServiceState> }) {
+  // Re-fit once real numbers arrive: nodes grow from "waiting for data" to two metric rows.
+  const rf = useRef<ReactFlowInstance<Node<SvcData>, Edge> | null>(null);
+  const hasData = Object.values(services).some((s) => Object.keys(s?.values ?? {}).length > 0);
+  useEffect(() => {
+    const id = requestAnimationFrame(() => rf.current?.fitView(FIT));
+    return () => cancelAnimationFrame(id);
+  }, [hasData]);
   const nodes: Node<SvcData>[] = useMemo(
     () => Object.entries(POS).map(([id, position]) => ({
       id, position, type: "svc", data: { name: id, svc: services[id] }, draggable: false,
@@ -116,7 +125,7 @@ export default function ServiceGraph({ services }: { services: Record<string, Se
   );
   return (
     <div className="h-[460px] w-full xl:h-[540px]">
-      <ReactFlow nodes={nodes} edges={edges} nodeTypes={nodeTypes} fitView fitViewOptions={{ padding: 0.03, maxZoom: 1.5 }}
+      <ReactFlow nodes={nodes} edges={edges} nodeTypes={nodeTypes} fitView fitViewOptions={FIT} onInit={(i) => { rf.current = i; }}
         proOptions={{ hideAttribution: true }} nodesConnectable={false} elementsSelectable={false}
         panOnDrag={false} zoomOnScroll={false} zoomOnPinch={false} zoomOnDoubleClick={false} preventScrolling={false}>
         <Background color="#1e293b" gap={22} />

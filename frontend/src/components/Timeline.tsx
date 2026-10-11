@@ -22,6 +22,16 @@ type Item =
   | { kind: "human"; key: number; tick: number; text: string }
   | { kind: "decision"; key: number; tick: number; action: string; by: string; detail: string };
 
+// Why the router handed the incident from the fixed rule to the agents, in plain words.
+function handover(trigger: string): string {
+  if (trigger === "incident_detected") return "Something broke. The agent team takes over.";
+  if (trigger.startsWith("runbook rules conflict")) return "Two rules point to different fixes, so the fixed rule hands over to the agents.";
+  if (trigger.startsWith("no runbook rule")) return "No rule fits this situation, so the agents take over.";
+  if (trigger.startsWith("validator blocked")) return "The safety check blocked the rule's fix, so the agents take over.";
+  if (trigger.startsWith("the runbook's fix")) return "The fixed rule's fix didn't work, so the agents take over.";
+  return "The agents take over.";
+}
+
 const plainEvidence = (ev: Record<string, string> = {}) =>
   Object.entries(ev).map(([f, l]) => `${(METRIC[f]?.label ?? f.replace(/_/g, " ")).toLowerCase()} ${l}`).join(", ");
 
@@ -39,8 +49,7 @@ export function buildTimeline(messages: Msg[], roster: Map<string, AgentSpec>): 
           tone: c.mode === "resolved" ? "good" : c.mode === "agents" && c.trigger !== "incident_detected" ? "warn" : undefined,
           text: c.mode === "runbook" ? "Something broke. The fixed rule tries first."
             : c.mode === "resolved" ? "Fixed. Every service is healthy again."
-              : c.trigger === "incident_detected" ? "Something broke. The agent team takes over."
-                : "The fixed rule's fix didn't work, so the agents take over." });
+              : handover(String(c.trigger ?? "")) });
         break;
       case "recruit":
         if (c.initial) {
