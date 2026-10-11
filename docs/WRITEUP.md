@@ -99,8 +99,9 @@ in ticks of pain and picks the cheapest:
 - *Probe first:* costs a tick, halves the chance of being wrong, and a human is still available afterwards.
 - *Ask a human:* a fixed delay, but the answer is right.
 
-Thresholds fall out of the costs: harmless fixes need roughly 80% confidence, risky ones roughly 90%.
-A fix the validator blocks is never acted on. Every decision carries its numbers in plain English.
+Thresholds fall out of the costs (retry 4, risky harm 8, human 3, probe 1 tick, all hand-set assumptions):
+while probes remain, harmless fixes need about 72% confidence and risky ones about 87%; once both probes
+are used, about 58% and 80%. A fix the validator blocks is never acted on. Every decision carries its numbers in plain English.
 
 **Negotiation (Mode C).** Per round: every agent proposes; each challenges the most confident
 disagreeing peer with its strongest discriminating evidence and asks for theirs; both update; everyone
@@ -114,9 +115,14 @@ always risky.
 **LLM usage.** The LLM never produces probabilities and never chooses an action. It does two things:
 (1) reads an agent's log lines and writes a short reason (`agents/evidence.py`), and (2) writes the wording
 of challenges, the aggregator's explanation, the briefing a human reads before approving, and an end-of-run
-summary (`agents/voice.py`). Any LLM text that invents a number, a cause or an action is discarded in favour
-of a template. With no key, or if a call fails, everything runs on templates. Calls are throttled to the
-provider's rate limit and cached on disk.
+summary (`agents/voice.py`). The feature levels the LLM reports are never used: the measured levels always
+win, and any disagreement is only recorded. So beliefs, pooling, the cost rule, votes and the validator are
+plain code that no LLM output can reach. Every LLM sentence a human can read goes through the same guard:
+text that invents a number or names an action (and, for the voice layer, a cause not in the facts) is
+discarded in favour of a template. The guard checks facts, not tone, so a technically accurate but
+misleading sentence could still pass; the options table a human approves from is built by code. With no
+key, or if a call fails, everything runs on templates. Calls are throttled to the provider's rate limit
+and cached on disk.
 
 **Console.** React + TypeScript: service graph with health colours, agent roster with live belief bars,
 mode indicator with the reason for each switch, an action ledger filterable by agent, a provenance drawer
@@ -141,7 +147,7 @@ Directory and trace pipeline from Cisco's coffeeAGNTCY setup up:
   would add risk without a visible benefit; the bus interface is publish/subscribe only so it can be swapped in.
   A spike showed SLIM working in coffeeAGNTCY's own demo (one trace spanning exchange, SLIM and farm).
 
-**Engineering.** 104 automated tests (simulator determinism, partial observability, validator, runbook,
+**Engineering.** 108 automated tests (simulator determinism, partial observability, validator, runbook,
 belief math, decision rule, voice guard, engine behaviour, AGNTCY on/off and fallback). Everything is seeded
 and repeatable.
 
@@ -243,7 +249,7 @@ of 9.1, because the system stops probing and asks right away.
 
 ```bash
 uv sync && cp .env.example .env            # add one LLM key (optional)
-uv run pytest                              # 104 tests
+uv run pytest                              # 108 tests
 uv run python eval/evaluate.py             # all tables above, about a minute
 uv run python eval/evaluate_llm.py         # LLM on versus off (needs a key)
 uv run python scripts/warm_llm_cache.py    # before demoing with the LLM box ticked

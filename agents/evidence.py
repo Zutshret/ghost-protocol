@@ -12,14 +12,19 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
+from agents import voice
 from agents.llm import ask_json
 from shared.types import FEATURE_BASELINES, Level, Observation
 
-try:
-    from standins.sim import EXTRA_BASELINES, THRESHOLDS
-except ImportError:  # pragma: no cover
-    EXTRA_BASELINES, THRESHOLDS = {}, {}
+from simulator.faults import THRESHOLDS as REAL_THRESHOLDS
 
+try:  # only the two extra Network Analyst readings are missing from the real simulator
+    from standins.sim import EXTRA_BASELINES, THRESHOLDS as _STANDIN_THRESHOLDS
+except ImportError:  # pragma: no cover
+    EXTRA_BASELINES, _STANDIN_THRESHOLDS = {}, {}
+
+# Level rules shown to the LLM must be the ones the simulator actually uses.
+THRESHOLDS = {**{f: t for f, t in _STANDIN_THRESHOLDS.items() if f in EXTRA_BASELINES}, **REAL_THRESHOLDS}
 BASELINES = {**FEATURE_BASELINES, **EXTRA_BASELINES}
 
 
@@ -56,18 +61,29 @@ def extract(spec, obs: Observation, use_llm: bool) -> tuple[dict[str, Level], st
             + "\n\nLevel rules:\n" + _threshold_text(list(measured))
             + "\n\nClassify each feature as low/medium/high and say in one or two "
             "sentences what these signals suggest about the root cause "
-            "(bad_deploy, attack, db_fault, dependency_timeout)."
+            "(bad_deploy, attack, db_fault, dependency_timeout). Quote numbers exactly as they "
+            "appear in the logs, invent no other numbers, and do not recommend actions."
         )
         out = ask_json(prompt, Extraction, system=SYSTEM.format(name=spec.name, role=spec.role, goal=spec.goal))
         if out is not None:
-            info["source"] = "llm"
             levels = {}
             for f, lvl in measured.items():
                 got = out.levels.get(f)
                 if got is not None and Level(got) != lvl:
                     info["llm_disagreed"].append(f)
                 levels[f] = lvl  # the number is ground truth for what the agent saw
-            return levels, out.rationale.strip(), info
+            # The rationale is free text a human will read, so it gets the same guard as
+            # the voice layer: no number that is not in the agent's own readings, and no
+            # action name. If it fails, the plain measured-numbers sentence is used.
+            text = voice.clean(out.rationale)
+            facts = {"logs": obs.logs, "values": obs.values, "levels": {f: l.value for f, l in measured.items()},
+                     "level_rules": _threshold_text(list(measured))}
+            if voice.faithful(text, facts, allow_causes=True):
+                info["source"] = "llm"
+                return levels, text, info
+            info["rationale_rejected"] = True
+            voice.count_rejected()
+            return levels, fallback_rationale(obs, measured), info
     return measured, fallback_rationale(obs, measured), info
 
 
