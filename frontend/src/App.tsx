@@ -1,25 +1,13 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import AgentRoster from "./components/AgentRoster";
 import ApprovalPanel from "./components/ApprovalPanel";
 import DetailDrawer from "./components/DetailDrawer";
+import Header from "./components/Header";
 import Ledger from "./components/Ledger";
 import Results from "./components/Results";
 import ServiceGraph from "./components/ServiceGraph";
 import type { AgentSpec, Msg } from "./types";
 import { useRun, type RunConfig } from "./useRun";
-
-const SCENARIO_HELP: Record<string, string> = {
-  S1: "Clear database fault (runbook should win)",
-  S2: "Bad deploy that looks like an attack",
-  S3: "Dependency timeout (specialist recruited)",
-  S5: "Ambiguous + high-stakes (ask a human)",
-};
-const MODE_HELP: Record<string, string> = {
-  A: "Runbook only",
-  B: "Agents + central aggregator",
-  C: "Agents negotiate peer-to-peer",
-  D: "Hybrid: runbook first, then agents",
-};
 
 function ModeIndicator({ mode }: { mode: { mode: string; reason: string } | null }) {
   const m = mode?.mode ?? "idle";
@@ -47,6 +35,20 @@ export default function App() {
   });
   const [selected, setSelected] = useState<Msg | null>(null);
   const [agentFilter, setAgentFilter] = useState<string | null>(null);
+  const [, setHelp] = useState(false);
+
+  // Shareable demo links: ?scenario=S5&mode=C&seed=1&speed=0&autorun=1
+  useEffect(() => {
+    const q = new URLSearchParams(location.search);
+    const next = { ...cfg };
+    if (q.get("scenario")) next.scenario = q.get("scenario")!;
+    if (q.get("mode")) next.mode = q.get("mode")!;
+    if (q.get("seed")) next.seed = Number(q.get("seed"));
+    if (q.get("speed")) next.tick_delay = Number(q.get("speed"));
+    setCfg(next);
+    if (q.get("autorun") === "1") start(next);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const roster = useMemo(() => new Map<string, AgentSpec>(derived.agents.map((a) => [a.spec.id, a.spec])), [derived.agents]);
   const running = !!runId && !derived.metrics && !derived.error;
   const set = (k: keyof RunConfig, v: any) => setCfg((c) => ({ ...c, [k]: v }));
@@ -55,50 +57,11 @@ export default function App() {
 
   return (
     <div className="h-full flex flex-col">
-      {/* header */}
-      <header className="flex flex-wrap items-center gap-3 px-4 py-2 border-b border-slate-800 bg-slate-950">
-        <div className="flex items-baseline gap-2">
-          <span className="font-black tracking-[0.2em] text-slate-100">GHOST PROTOCOL</span>
-          <span className="text-[11px] text-slate-500">when AI agents disagree</span>
-        </div>
-        <nav className="flex gap-1 text-xs">
-          {(["live", "results"] as const).map((t) => (
-            <button key={t} onClick={() => setTab(t)} className={`px-2 py-1 rounded ${tab === t ? "bg-slate-800 text-white" : "text-slate-400"}`}>{t}</button>
-          ))}
-        </nav>
-        <div className="flex flex-wrap items-center gap-2 text-xs ml-auto">
-          <select title={SCENARIO_HELP[cfg.scenario]} value={cfg.scenario} onChange={(e) => set("scenario", e.target.value)} className="bg-slate-900 border border-slate-700 rounded px-2 py-1">
-            {(meta?.scenarios ?? ["S1", "S2", "S3", "S5"]).map((s: string) => <option key={s} value={s}>{s} · {SCENARIO_HELP[s] ?? ""}</option>)}
-          </select>
-          <select value={cfg.mode} onChange={(e) => set("mode", e.target.value)} className="bg-slate-900 border border-slate-700 rounded px-2 py-1">
-            {(meta?.modes ?? ["A", "B", "C", "D"]).map((m: string) => <option key={m} value={m}>Mode {m} · {MODE_HELP[m]}</option>)}
-          </select>
-          {cfg.mode === "D" && (
-            <select value={cfg.agents_mode_for_d} onChange={(e) => set("agents_mode_for_d", e.target.value)} className="bg-slate-900 border border-slate-700 rounded px-2 py-1" title="Which agent mode D hands over to">
-              <option value="B">then aggregator (B)</option>
-              <option value="C">then negotiation (C)</option>
-            </select>
-          )}
-          <label className="flex items-center gap-1">seed
-            <input type="number" value={cfg.seed} onChange={(e) => set("seed", +e.target.value)} className="w-14 bg-slate-900 border border-slate-700 rounded px-1 py-1" />
-          </label>
-          <label className="flex items-center gap-1" title="tick delay (seconds)">speed
-            <select value={cfg.tick_delay} onChange={(e) => set("tick_delay", +e.target.value)} className="bg-slate-900 border border-slate-700 rounded px-1 py-1">
-              <option value={1.5}>slow</option><option value={0.8}>demo</option><option value={0.25}>fast</option><option value={0}>instant</option>
-            </select>
-          </label>
-          <label className={`flex items-center gap-1 ${meta?.llm?.available ? "" : "opacity-50"}`} title={meta?.llm?.available ? meta.llm.model : "no LLM key in .env: agents use measured levels + template reasons"}>
-            <input type="checkbox" disabled={!meta?.llm?.available} checked={cfg.use_llm} onChange={(e) => set("use_llm", e.target.checked)} /> LLM
-          </label>
-          <select value={cfg.ablate ?? ""} onChange={(e) => set("ablate", e.target.value || null)} className="bg-slate-900 border border-slate-700 rounded px-1 py-1" title="Ablation: remove one agent's evidence">
-            <option value="">no ablation</option>
-            {derived.agents.map((a) => <option key={a.spec.id} value={a.spec.id}>ablate {a.spec.id}</option>)}
-          </select>
-          {running
-            ? <button onClick={stop} className="px-3 py-1 rounded bg-slate-700 hover:bg-slate-600 font-semibold">Stop</button>
-            : <button onClick={() => { setTab("live"); setSelected(null); start(cfg); }} className="px-3 py-1 rounded bg-violet-600 hover:bg-violet-500 font-semibold">Start</button>}
-        </div>
-      </header>
+      <Header cfg={cfg} set={set} running={running} tab={tab} setTab={setTab}
+        onRun={() => { setTab("live"); setSelected(null); start(cfg); }} onStop={stop}
+        scenarios={meta?.scenarios ?? ["S1", "S2", "S3", "S5"]} modes={meta?.modes ?? ["A", "B", "C", "D"]}
+        agentIds={derived.agents.map((a) => a.spec.id)} llmAvailable={!!meta?.llm?.available}
+        llmModel={meta?.llm?.model} onHelp={() => setHelp(true)} />
 
       {meta?.error && <div className="bg-red-900/50 text-red-200 text-sm px-4 py-1">Backend not reachable. Start it: <span className="mono">uv run uvicorn backend.main:app --port 8000</span></div>}
 
