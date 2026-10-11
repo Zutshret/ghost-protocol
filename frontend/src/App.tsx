@@ -10,23 +10,37 @@ import { DecisionCard, ResultCard } from "./components/Outcome";
 import Results from "./components/Results";
 import ServiceGraph from "./components/ServiceGraph";
 import Timeline from "./components/Timeline";
+import { act, hyp } from "./labels";
 import type { AgentSpec, Msg } from "./types";
 import { useRun, type RunConfig } from "./useRun";
 
-function Step({ n, title, help, children, className = "", right }: {
+function Step({ n, title, help, children, className = "", right, collapsible, open = true, onToggle, summary }: {
   n: number; title: string; help: string; children: React.ReactNode; className?: string; right?: React.ReactNode;
+  collapsible?: boolean; open?: boolean; onToggle?: () => void; summary?: React.ReactNode;
 }) {
-  return (
-    <section className={`flex min-h-0 flex-col rounded-2xl border border-slate-800/80 bg-slate-950/60 p-4 ${className}`}>
-      <div className="mb-3 flex items-start gap-3">
-        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-violet-600/20 text-sm font-bold text-violet-300">{n}</span>
-        <div className="min-w-0">
-          <h2 className="text-lg font-semibold leading-tight text-slate-50">{title}</h2>
-          <p className="text-sm text-slate-400">{help}</p>
-        </div>
-        {right && <div className="ml-auto shrink-0">{right}</div>}
+  const head = (
+    <div className="flex w-full items-center gap-3 text-left">
+      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-violet-600/20 text-sm font-bold text-violet-300">{n}</span>
+      <div className="min-w-0 flex-1">
+        <h2 className="text-xl font-semibold leading-tight text-slate-50">{title}</h2>
+        {collapsible && !open
+          ? <div className="mt-0.5 truncate text-[15px] text-slate-300">{summary}</div>
+          : <p className="text-sm text-slate-400">{help}</p>}
       </div>
-      {children}
+      {right && <div className="shrink-0">{right}</div>}
+      {collapsible && (
+        <span className={`flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1 text-sm transition-colors ${open ? "border-violet-500/60 text-violet-200" : "border-slate-700 text-slate-300"}`}>
+          {open ? "Hide" : "Show"} <span className={`transition-transform duration-300 ${open ? "rotate-180" : ""}`}>▾</span>
+        </span>
+      )}
+    </div>
+  );
+  return (
+    <section className={`flex min-h-0 flex-col rounded-2xl border border-slate-800/80 bg-slate-950/60 p-5 shadow-[0_1px_0_rgba(255,255,255,0.03)_inset] ${className}`}>
+      {collapsible
+        ? <button onClick={onToggle} aria-expanded={open} className="rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-violet-500">{head}</button>
+        : head}
+      {(!collapsible || open) && <div className="mt-4 flex min-h-0 flex-1 flex-col">{children}</div>}
     </section>
   );
 }
@@ -51,6 +65,8 @@ export default function App() {
   const [fullLedger, setFullLedger] = useState(false);
   const [help, setHelp] = useState(false);
   const [official, setOfficial] = useState<any[] | null>(null);
+  const [showAgents, setShowAgents] = useState(false);
+  const [showOutcome, setShowOutcome] = useState(false);
   const roster = useMemo(() => new Map<string, AgentSpec>(derived.agents.map((a) => [a.spec.id, a.spec])), [derived.agents]);
   const running = !!runId && !derived.metrics && !derived.error;
   const set = (k: keyof RunConfig, v: any) => setCfg((c) => ({ ...c, [k]: v }));
@@ -75,6 +91,9 @@ export default function App() {
     if (q.get("speed")) next.tick_delay = Number(q.get("speed"));
     if (q.get("autorun") === "1") { setHelp(false); start(next); }
     if (q.get("tab") === "results") { setHelp(false); setTab("results"); }
+    const opened = (q.get("open") ?? "").split(",");
+    if (opened.includes("2")) setShowAgents(true);
+    if (opened.includes("4")) setShowOutcome(true);
     setCfg(next);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -83,6 +102,24 @@ export default function App() {
   const ph = PHASE[phase] ?? PHASE.idle;
   const openById = (id: number) => setSelected(derived.byId.get(id) ?? null);
   const run = derived.start?.content;
+
+  const thinking = derived.agents.filter((a) => a.belief);
+  const votes = new Map<string, number>();
+  for (const a of thinking) {
+    const top = Object.entries(a.belief!).sort((x, y) => y[1] - x[1])[0][0];
+    votes.set(top, (votes.get(top) ?? 0) + 1);
+  }
+  const lead = [...votes.entries()].sort((x, y) => y[1] - x[1])[0];
+  const agentsSummary = lead
+    ? <span>{lead[1]} of {thinking.length} agents think it's <b className="text-white">{hyp(lead[0])}</b>{votes.size > 1 ? <span className="text-slate-400"> · {votes.size - 1} other view{votes.size > 2 ? "s" : ""}</span> : null}</span>
+    : <span className="text-slate-400">{derived.agents.length} AI agents standing by, each watching a different part of the system</span>;
+  const decision = [...messages].reverse().find((m) => m.type === "action" && m.content.action !== "probe");
+  const mt = derived.metrics;
+  const outcomeSummary = mt
+    ? <span><b className={mt.recovery_time < 30 ? "text-emerald-300" : "text-red-300"}>{mt.recovery_time < 30 ? `Recovered in ${mt.recovery_time} min` : "Did not recover"}</b>
+        <span className="text-slate-400"> · {mt.unnecessary_actions} wrong fix{mt.unnecessary_actions === 1 ? "" : "es"} · {mt.escalated_to_human ? "asked a human" : "no human needed"}{decision ? ` · ${act(decision.content.action).toLowerCase()}` : ""}</span></span>
+    : decision ? <span>Decision so far: <b className="text-white">{act(decision.content.action)}</b></span>
+      : <span className="text-slate-400">The decision and the scorecard appear here when the incident ends</span>;
 
   return (
     <div className="flex min-h-full flex-col bg-[radial-gradient(ellipse_at_top,_rgba(91,33,182,0.10),_transparent_55%)]">
@@ -99,7 +136,8 @@ export default function App() {
           {/* status strip */}
           <div className="flex flex-wrap items-center gap-4">
             <span className={`rounded-full px-4 py-1.5 text-sm font-semibold transition-colors duration-500 ${ph.cls}`}>{ph.label}</span>
-            {derived.mode?.reason && phase !== "idle" && <span className="max-w-xl truncate text-sm text-slate-400" title={derived.mode.reason}>{derived.mode.reason}</span>}
+            {derived.mode?.reason && phase !== "idle" && <span className="max-w-xl truncate text-sm text-slate-400" title={derived.mode.reason}>
+              {phase === "resolved" ? `All services healthy again at minute ${derived.mode.tick}.` : derived.mode.reason}</span>}
             <div className="ml-auto flex items-center gap-5 text-sm text-slate-400">
               <div className="flex items-center gap-2">
                 <span>Minute {derived.tick} of 30<Info text="The simulation runs 30 ticks (think: minutes). The fault starts at minute 5." /></span>
@@ -116,23 +154,24 @@ export default function App() {
           </div>
           {derived.error && <div className="rounded-lg border border-red-600 bg-red-950 p-2 text-sm text-red-200">{derived.error}</div>}
 
-          <div className="grid gap-4 xl:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
-            <div className="flex min-w-0 flex-col gap-4">
-              <Step n={1} title="What broke" help="The payments platform. Failing services glow red; hover a service for all its numbers.">
+          <div className="grid gap-5 xl:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)]">
+            <div className="flex min-w-0 flex-col gap-5">
+              <Step n={1} title="What broke" help="The payments platform. Failing services glow red; hover a service for all of its numbers.">
                 <ServiceGraph services={derived.services} />
               </Step>
-              <Step n={2} title="What the agents think" help="Each agent sees only its own data and guesses the cause. Their goals differ, so they can disagree.">
+              <Step n={2} title="What the agents think" collapsible open={showAgents} onToggle={() => setShowAgents((o) => !o)} summary={agentsSummary}
+                help="Each agent sees only its own data and guesses the cause. Their goals differ, so they can disagree.">
                 <AgentRoster agents={derived.agents} cids={derived.agntcy?.cids}
                   onSelect={(id) => { setAgentFilter(id); setFullLedger(true); }} />
               </Step>
             </div>
 
-            <div className="flex min-w-0 flex-col gap-4 xl:h-[calc(100vh-200px)] xl:min-h-[760px]">
-              <Step n={3} title="How they decided" className="min-h-[380px] flex-1"
-                help={fullLedger ? "Every message, including votes. Click any line for details." : "The key moments: claims, challenges, changes of mind, and the decision. Click any moment for details."}
-                right={<button onClick={() => setFullLedger((f) => !f)}
-                  className="rounded-lg border border-slate-700 px-2.5 py-1 text-xs text-slate-300 hover:border-slate-500">
-                  {fullLedger ? "Back to key moments" : "Show full ledger"}</button>}>
+            <div className="flex min-w-0 flex-col gap-5 xl:h-[calc(100vh-200px)] xl:min-h-[700px]">
+              <Step n={3} title="How they decided" className="min-h-[420px] flex-1"
+                help={fullLedger ? "Every message, including each vote. Click a line for details." : "The key moments, in order. Click any moment to see the evidence behind it."}
+                right={<span onClick={(e) => { e.stopPropagation(); setFullLedger((f) => !f); }} role="button" tabIndex={0}
+                  className="cursor-pointer rounded-full border border-slate-700 px-3 py-1 text-xs text-slate-400 hover:border-slate-500 hover:text-slate-200">
+                  {fullLedger ? "Back to the story" : "Full log"}</span>}>
                 <div className="min-h-0 flex-1">
                   {fullLedger ? (
                     <div className="h-full overflow-hidden rounded-lg border border-slate-800">
@@ -144,8 +183,9 @@ export default function App() {
                   )}
                 </div>
               </Step>
-              <Step n={4} title="Did it work" help="What was done, and how the outcome compares with the fixed-rule baseline.">
-                <div className="space-y-3">
+              <Step n={4} title="Did it work" collapsible open={showOutcome} onToggle={() => setShowOutcome((o) => !o)} summary={outcomeSummary}
+                className="shrink-0" help="What was done, and how the outcome compares with the fixed-rule baseline.">
+                <div className="space-y-3 overflow-y-auto">
                   <DecisionCard messages={messages} roster={roster} onOpen={setSelected} />
                   <ResultCard metrics={derived.metrics} scenario={run?.scenario ?? cfg.scenario} mode={run?.mode ?? cfg.mode} official={official} />
                 </div>

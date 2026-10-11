@@ -42,15 +42,18 @@ export const METRIC: Record<string, { label: string; fmt: (v: number) => string 
   evictions_per_min: { label: "Evictions/min", fmt: (v) => v.toFixed(0) },
   memory_used_pct: { label: "Memory", fmt: (v) => `${v.toFixed(0)}%` },
   conn_pool_saturation: { label: "Pool use", fmt: (v) => `${(v * 100).toFixed(0)}%` },
+  minutes_since_deploy: { label: "Minutes since last release", fmt: (v) => v.toFixed(0) },
+  canary_error_rate: { label: "Canary errors", fmt: (v) => `${(v * 100).toFixed(1)}%` },
+  config_changes: { label: "Config changes", fmt: (v) => v.toFixed(0) },
   downstream_p99_ms: { label: "p99", fmt: (v) => `${v.toFixed(0)} ms` },
 };
 
 const POS: Record<string, { x: number; y: number }> = {
-  gateway: { x: 250, y: 0 },
-  auth: { x: 40, y: 120 },
-  payments: { x: 460, y: 120 },
-  database: { x: 320, y: 240 },
-  cache: { x: 600, y: 240 },
+  gateway: { x: 300, y: 0 },
+  auth: { x: 20, y: 170 },
+  payments: { x: 560, y: 170 },
+  database: { x: 380, y: 340 },
+  cache: { x: 740, y: 340 },
 };
 
 const EDGES: [string, string][] = [
@@ -71,20 +74,20 @@ function ServiceNode({ data }: NodeProps<Node<SvcData>>) {
   const shown = (keys.length ? keys : Object.keys(values)).slice(0, 2);
   const all = Object.keys(values);
   return (
-    <div className={`group relative w-48 rounded-xl border-2 px-3 py-2 transition-all duration-700 ${h.box}`}>
+    <div className={`group relative w-60 rounded-2xl border-2 px-4 py-3 transition-all duration-700 ${h.box}`}>
       <Handle type="target" position={Position.Top} className="!border-0 !bg-slate-600" />
       <div className="flex items-center gap-2">
-        <span className={`h-2.5 w-2.5 rounded-full transition-colors duration-700 ${h.dot}`} />
-        <span className="text-[15px] font-semibold capitalize text-slate-50">{data.name}</span>
-        <span className={`ml-auto text-xs font-medium ${h.text}`}>{h.label}</span>
+        <span className={`h-3 w-3 rounded-full transition-colors duration-700 ${h.dot}`} />
+        <span className="text-lg font-semibold capitalize text-slate-50">{data.name}</span>
+        <span className={`ml-auto text-sm font-semibold ${h.text}`}>{h.label}</span>
       </div>
-      <div className="mt-1.5 space-y-0.5">
+      <div className="mt-2 space-y-1">
         {shown.length ? shown.map((k) => (
-          <div key={k} className="flex justify-between text-xs">
+          <div key={k} className="flex justify-between text-sm">
             <span className="text-slate-400">{METRIC[k]?.label ?? k}</span>
             <span className={`tabular-nums ${lvl(data.svc?.levels[k])}`}>{METRIC[k]?.fmt(values[k]) ?? values[k]}</span>
           </div>
-        )) : <div className="text-xs text-slate-500">no telemetry</div>}
+        )) : <div className="text-sm text-slate-500">waiting for data</div>}
       </div>
       {/* full metrics on hover */}
       <div className="pointer-events-none absolute left-1/2 top-full z-50 mt-2 w-64 -translate-x-1/2 rounded-lg border border-slate-700 bg-slate-900 p-3 text-xs opacity-0 shadow-2xl transition-opacity duration-150 group-hover:opacity-100">
@@ -114,13 +117,13 @@ export default function ServiceGraph({ services }: { services: Record<string, Se
     () => EDGES.map(([s, t]) => {
       const bad = services[t]?.health === "red" || services[s]?.health === "red";
       return { id: `${s}-${t}`, source: s, target: t, animated: bad,
-        style: { stroke: bad ? "#f87171" : "#334155", strokeWidth: 2, transition: "stroke 0.7s" } };
+        style: { stroke: bad ? "#f87171" : "#334155", strokeWidth: 2.5, transition: "stroke 0.7s" } };
     }),
     [services],
   );
   return (
-    <div className="h-[310px] w-full">
-      <ReactFlow nodes={nodes} edges={edges} nodeTypes={nodeTypes} fitView fitViewOptions={{ padding: 0.08 }}
+    <div className="h-[460px] w-full xl:h-[540px]">
+      <ReactFlow nodes={nodes} edges={edges} nodeTypes={nodeTypes} fitView fitViewOptions={{ padding: 0.06, maxZoom: 1.25 }}
         proOptions={{ hideAttribution: true }} nodesConnectable={false} elementsSelectable={false}
         panOnDrag={false} zoomOnScroll={false} zoomOnPinch={false} zoomOnDoubleClick={false} preventScrolling={false}>
         <Background color="#1e293b" gap={22} />
