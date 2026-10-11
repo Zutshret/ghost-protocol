@@ -4,6 +4,7 @@ Runs everything the write-up needs and saves it under eval/results/:
   official.json               modes A-D x scenarios (shows up in the console's Results tab)
   official_ablation.json      what happens when one agent's evidence is removed
   official_decision_rule.json expected-cost rule vs fixed thresholds vs different human costs
+  official_mode_d.json        Mode D with and without the 'two runbook rules match' hand-off
   REPORT.md                   all tables in readable form (paste into the write-up)
 
 Seeds: evaluation uses seeds 0..N-1. The likelihood tables were learned on seeds
@@ -44,8 +45,8 @@ FIRST_TEST_SEED = 0
 # --------------------------------------------------------------------------
 # Running
 # --------------------------------------------------------------------------
-def run_one(scenario: str, mode: str, seed: int, ablate: str | None = None) -> dict:
-    eng = IncidentEngine(scenario, mode, seed, ablate=ablate, agents_mode_for_d=Mode.C)
+def run_one(scenario: str, mode: str, seed: int, ablate: str | None = None, **engine_kwargs) -> dict:
+    eng = IncidentEngine(scenario, mode, seed, ablate=ablate, agents_mode_for_d=Mode.C, **engine_kwargs)
     m = eng.run()
     row = m.model_dump(mode="json")
     row["unsafe_action"] = eng.sim.summary()["consistency_violations"] > 0  # failover that risked data
@@ -119,6 +120,24 @@ def ablation(seeds: range) -> list[dict]:
     return summarize(rows, keys=("ablated", "scenario", "mode"))
 
 
+D_VARIANTS = {
+    "conflict hand-off (default)": True,
+    "naive: first matching rule wins": False,
+}
+
+
+def mode_d_variants(seeds: range) -> list[dict]:
+    """Mode D with and without the router's 'two runbook rules match' hand-off.
+
+    The default (hand off) was chosen after seeing that the naive setting just reproduces the
+    runbook's S2 misfire, so both are reported."""
+    rows: list[dict] = []
+    for name, flag in D_VARIANTS.items():
+        rows += [dict(run_one(sc, "D", seed, escalate_on_conflict=flag), variant=name)
+                 for sc in SCENARIOS for seed in seeds]
+    return summarize(rows, keys=("variant", "scenario", "mode"))
+
+
 def decision_rule_variants(seeds: range) -> list[dict]:
     """Mode B with different decision rules plugged into the same engine."""
     from standins import intelligence as standin  # Person B's fixed-threshold rule
@@ -165,7 +184,8 @@ def table(headers: list[str], body: list[list[str]]) -> str:
     return "\n".join(lines)
 
 
-def build_report(n: int, rows: list[dict], summary: list[dict], abl: list[dict], rules: list[dict], calib: dict) -> str:
+def build_report(n: int, rows: list[dict], summary: list[dict], abl: list[dict], rules: list[dict], calib: dict,
+                 dvars: list[dict]) -> str:
     out = [
         "# GHOST PROTOCOL: evaluation report",
         "",
@@ -235,6 +255,18 @@ def build_report(n: int, rows: list[dict], summary: list[dict], abl: list[dict],
     out.append(table(["Scenario", "Accuracy", "Average confidence", "Brier", "Uncertainty (bits)"],
                      [[sc, f"{m['accuracy']:.0%}", f"{m['avg_confidence']:.0%}", f"{m['brier']:.3f}", f"{m['entropy_bits']:.2f}"]
                       for sc, m in calib.items()]))
+
+    out += ["", "## 6. Mode D: what the router does when two runbook rules match", "",
+            "The runbook's rules can match at the same time (S2: 'traffic spike' and 'recent deploy'). "
+            "The default hands the decision to the agents at that point. The naive variant applies the first matching "
+            "rule, which reproduces the runbook's misfire. The default was chosen after seeing this result, so both are shown.", ""]
+    body = []
+    for name in D_VARIANTS:
+        for sc in SCENARIOS:
+            r = next(x for x in dvars if x["variant"] == name and x["scenario"] == sc)
+            body.append([name, sc, fmt(r, "correct_diagnosis", pct=True), fmt(r, "recovery_time", digits=1),
+                         fmt(r, "unnecessary_actions"), fmt(r, "escalated_to_human", pct=True)])
+    out.append(table(["Mode D variant", "Scenario", "Right first time", "Recovery (ticks)", "Wrong actions", "Asked a human"], body))
     return "\n".join(out) + "\n"
 
 
@@ -249,23 +281,27 @@ def main() -> None:
     RESULTS.mkdir(parents=True, exist_ok=True)
     t0 = time.time()
 
-    print(f"[1/4] modes x scenarios ({args.seeds} seeds per cell)...")
+    print(f"[1/5] modes x scenarios ({args.seeds} seeds per cell)...")
     rows, summary = main_comparison(seeds)
     note = f"{args.seeds} seeds/cell, seeds {seeds.start}-{seeds.stop - 1}, D->C, oracle human, no LLM"
     (RESULTS / "official.json").write_text(json.dumps({"note": note, "summary": summary, "runs": rows}, indent=1))
 
-    print("[2/4] ablation...")
+    print("[2/5] ablation...")
     abl = ablation(seeds)
     (RESULTS / "official_ablation.json").write_text(json.dumps({"note": note, "rows": abl}, indent=1))
 
-    print("[3/4] decision rule variants...")
+    print("[3/5] decision rule variants...")
     rules = decision_rule_variants(seeds)
     (RESULTS / "official_decision_rule.json").write_text(json.dumps({"note": note, "rows": rules}, indent=1))
 
-    print("[4/4] belief calibration...")
+    print("[4/5] Mode D variants...")
+    dvars = mode_d_variants(seeds)
+    (RESULTS / "official_mode_d.json").write_text(json.dumps({"note": note, "rows": dvars}, indent=1))
+
+    print("[5/5] belief calibration...")
     calib = engine_calibration(0.5, [ScenarioId(s) for s in SCENARIOS])
 
-    report = build_report(args.seeds, rows, summary, abl, rules, calib)
+    report = build_report(args.seeds, rows, summary, abl, rules, calib, dvars)
     (RESULTS / "REPORT.md").write_text(report)
     print(f"\nDone in {time.time() - t0:.0f}s. Wrote official*.json and REPORT.md to {RESULTS}")
 

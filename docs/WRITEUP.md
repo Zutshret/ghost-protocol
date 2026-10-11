@@ -56,7 +56,7 @@ flowchart LR
 - **A, runbook only.** The baseline.
 - **B, agents + central aggregator.** Beliefs are pooled, one rule decides.
 - **C, peer negotiation.** No component pools anything; the protocol decides.
-- **D, hybrid.** Runbook first; agents when the router says so.
+- **D, hybrid.** Runbook first. The router hands over to the agents when no rule matches, when two rules match at once, when the validator blocks the rule's fix, or when the fix fails.
 
 **The simulated platform.** Five services, 30 ticks, a fault starting at tick 5 that ramps up over
 4 ticks. Four hidden root causes: `bad_deploy`, `attack`, `db_fault`, `dependency_timeout`.
@@ -150,7 +150,7 @@ Directory and trace pipeline from Cisco's coffeeAGNTCY setup up:
   would add risk without a visible benefit; the bus interface is publish/subscribe only so it can be swapped in.
   A spike showed SLIM working in coffeeAGNTCY's own demo (one trace spanning exchange, SLIM and farm).
 
-**Engineering.** 111 automated tests (simulator determinism, partial observability, validator, runbook,
+**Engineering.** 114 automated tests (simulator determinism, partial observability, validator, runbook,
 belief math, decision rule, voice guard, engine behaviour, AGNTCY on/off and fallback). Everything is seeded
 and repeatable.
 
@@ -174,8 +174,8 @@ and repeatable.
 | Scenario | A Runbook | B Agents + aggregator | C Peer negotiation | D Hybrid |
 |---|---|---|---|---|
 | S1 clear DB fault | 100% | 100% | 100% | 100% |
-| S2 deploy that looks like an attack | 75% | 100% | 100% | 75% |
-| S3 dependency timeout | 98% | 100% | 100% | 98% |
+| S2 deploy that looks like an attack | 75% | 100% | 100% | 97% |
+| S3 dependency timeout | 98% | 100% | 100% | 100% |
 | S5 ambiguous, high stakes | 0% | 97% | 98% | 94% |
 
 **Recovery time (ticks from fault start; 30 means never recovered)**
@@ -183,8 +183,8 @@ and repeatable.
 | Scenario | A | B | C | D |
 |---|---|---|---|---|
 | S1 | 6.3 | 6.0 | 6.0 | 6.0 |
-| S2 | 8.0 | 7.0 | 7.0 | 8.0 |
-| S3 | 8.2 | 8.0 | 9.2 | 8.2 |
+| S2 | 8.0 | 7.0 | 7.0 | 7.1 |
+| S3 | 8.2 | 8.0 | 9.2 | 8.1 |
 | S5 | 30.0 | 9.1 | 6.2 | 8.2 |
 
 What this says:
@@ -192,6 +192,10 @@ What this says:
 - **On clear failures the agents cost nothing.** S1: same accuracy, marginally faster.
 - **On misleading evidence they win.** S2: +25 points right first time (paired 95% interval +18 to +34),
   1 tick faster, and the runbook's wrong "block traffic" actions disappear.
+- **The hybrid keeps most of that gain.** D is 97% right on S2 because the router hands over the moment two
+  runbook rules match. The naive variant (first matching rule wins) is only 75% right, 8.0 ticks and 0.25
+  wrong actions per run, so we report both (`eval/results/REPORT.md`, section 6). We chose the hand-off as the
+  default after seeing that result.
 - **On ambiguous high-stakes incidents the runbook cannot recover.** S5: it never recovers within 30 ticks
   (87% availability); the agents escalate in 100% of runs and recover in 6 to 9 ticks (97% to 98%).
 - **Negotiation (C) is as accurate as the aggregator (B) with no central decider**, faster on S5
@@ -242,8 +246,9 @@ of 9.1, because the system stops probing and asks right away.
 - The engine's validator reads the true replication lag in every mode, so the "unsafe action" column is 0% for
   all modes and does not discriminate between them. A standalone runbook that trusts noisy dashboards
   (`eval/run_scenarios.py`) causes an unsafe failover in about 34% of S5 runs.
-- Mode D matches the runbook on S2 by design (it applies the first matching rule, even when rules conflict).
-  An `escalate_on_conflict` option exists but is off in the reported numbers.
+- Mode D's hand-off when two runbook rules match (`escalate_on_conflict`) is on in the reported numbers. We
+  switched it on after seeing the naive setting reproduce the runbook's S2 misfire (75% right against 97%), so
+  that result is shown beside it rather than hidden.
 - AGNTCY is used for the Directory (agent cards, capability-based recruitment) and for traces. Agent-to-agent
   messaging is not yet A2A over SLIM. With the Directory unreachable, each run waits several seconds on
   timeouts before falling back.
@@ -254,7 +259,7 @@ of 9.1, because the system stops probing and asks right away.
 
 ```bash
 uv sync && cp .env.example .env            # add one LLM key (optional)
-uv run pytest                              # 111 tests
+uv run pytest                              # 114 tests
 uv run python eval/evaluate.py             # all tables above, about a minute
 uv run python eval/evaluate_llm.py         # LLM on versus off (needs a key)
 uv run python scripts/warm_llm_cache.py    # before demoing with the LLM box ticked
@@ -263,6 +268,7 @@ uv run uvicorn backend.main:app --port 8000   # console at http://localhost:8000
 # uv sync --extra agntcy && GHOST_AGNTCY=1 uv run uvicorn backend.main:app --port 8000
 ```
 
-Demo path (3 minutes): S1 Mode D (runbook handles it); S2 Mode D seed 2 (runbook misfires, hand-off, Security
-disagrees, team agrees on rollback); S3 Mode C (specialist recruited); S5 Mode C seed 1 (human approval panel);
+Demo path (3 minutes): S1 Mode D (runbook handles it); S2 Mode A seed 2 (the runbook alone blocks traffic
+wrongly and recovers late), then S2 Mode D seed 2 (the router sees two rules match, hands over at once, the team
+rolls back); S3 Mode C (specialist recruited); S5 Mode C seed 1 (human approval panel);
 then the Results tab.

@@ -11,7 +11,7 @@ export const MODES: Record<string, { name: string; blurb: string }> = {
   A: { name: "Fixed rule (baseline)", blurb: "A traditional if-then runbook. No AI." },
   B: { name: "Agents + coordinator", blurb: "Agents share what they believe; one coordinator makes the call." },
   C: { name: "Agents negotiate (our approach)", blurb: "Agents challenge each other and vote. No boss; safety agents can veto." },
-  D: { name: "Fixed rule first, then agents", blurb: "The runbook tries first; agents take over if it fails or can't decide." },
+  D: { name: "Fixed rule first, then agents", blurb: "The runbook tries first; agents take over if it fails, can't decide, or two rules disagree." },
 };
 
 export const HYPOTHESIS: Record<string, string> = {

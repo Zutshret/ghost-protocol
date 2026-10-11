@@ -20,8 +20,8 @@ FaultInjector → Simulator ──noisy telemetry──▶ Router
   tick 5, seeded noise and 5% flaky readings.
 - **Router and engine** (`backend/engine.py`). This is plain code. It detects the
   incident, runs the runbook, and switches from deterministic to probabilistic
-  handling when no rule matches or a fix did not help (and optionally when rules
-  conflict). It also verifies fixes and computes metrics.
+  handling when no rule matches, two rules match at once, the validator blocks the
+  rule's fix, or a fix did not help. It also verifies fixes and computes metrics.
 - **Agents** (`agents/agent_base.py`, `agents/registry.json`). There are five core
   agents, plus a Network Analyst recruited on demand. Each agent sees only its own
   3 features (partial information) and has its own goal, encoded as action costs
