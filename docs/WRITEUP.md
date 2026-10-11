@@ -147,7 +147,7 @@ Directory and trace pipeline from Cisco's coffeeAGNTCY setup up:
   would add risk without a visible benefit; the bus interface is publish/subscribe only so it can be swapped in.
   A spike showed SLIM working in coffeeAGNTCY's own demo (one trace spanning exchange, SLIM and farm).
 
-**Engineering.** 107 automated tests (simulator determinism, partial observability, validator, runbook,
+**Engineering.** 108 automated tests (simulator determinism, partial observability, validator, runbook,
 belief math, decision rule, voice guard, engine behaviour, AGNTCY on/off and fallback). Everything is seeded
 and repeatable.
 
@@ -249,7 +249,7 @@ of 9.1, because the system stops probing and asks right away.
 
 ```bash
 uv sync && cp .env.example .env            # add one LLM key (optional)
-uv run pytest                              # 107 tests
+uv run pytest                              # 108 tests
 uv run python eval/evaluate.py             # all tables above, about a minute
 uv run python eval/evaluate_llm.py         # LLM on versus off (needs a key)
 uv run python scripts/warm_llm_cache.py    # before demoing with the LLM box ticked

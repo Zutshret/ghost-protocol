@@ -140,3 +140,11 @@ def test_llm_helper_throttle_and_rate_limit_parsing():
     assert llm._rate_limit_delay(Boom("network down")) is None
     assert llm._rate_limit_delay(Boom('429 quota... Please retry in 34.5s.')) == pytest.approx(35.5)
     assert llm._rate_limit_delay(Boom("RESOURCE_EXHAUSTED")) == 20.0
+
+
+def test_llm_level_rules_use_the_real_simulator_thresholds():
+    from agents import evidence
+    from simulator.faults import THRESHOLDS as real
+
+    for feature, bounds in real.items():
+        assert evidence.THRESHOLDS[feature] == bounds, feature

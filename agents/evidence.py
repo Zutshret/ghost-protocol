@@ -16,11 +16,15 @@ from agents import voice
 from agents.llm import ask_json
 from shared.types import FEATURE_BASELINES, Level, Observation
 
-try:
-    from standins.sim import EXTRA_BASELINES, THRESHOLDS
-except ImportError:  # pragma: no cover
-    EXTRA_BASELINES, THRESHOLDS = {}, {}
+from simulator.faults import THRESHOLDS as REAL_THRESHOLDS
 
+try:  # only the two extra Network Analyst readings are missing from the real simulator
+    from standins.sim import EXTRA_BASELINES, THRESHOLDS as _STANDIN_THRESHOLDS
+except ImportError:  # pragma: no cover
+    EXTRA_BASELINES, _STANDIN_THRESHOLDS = {}, {}
+
+# Level rules shown to the LLM must be the ones the simulator actually uses.
+THRESHOLDS = {**{f: t for f, t in _STANDIN_THRESHOLDS.items() if f in EXTRA_BASELINES}, **REAL_THRESHOLDS}
 BASELINES = {**FEATURE_BASELINES, **EXTRA_BASELINES}
 
 
