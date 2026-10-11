@@ -13,7 +13,6 @@ export const SERVICE_ABOUT: Record<string, string> = {
   auth: "Auth: checks who is logging in.",
   payments: "Payments: processes card payments.",
   database: "Database: stores accounts and transactions.",
-  cache: "Cache: serves repeated lookups so the database isn't hit every time.",
 };
 
 // The two numbers worth showing on each node; the rest appear on hover.
@@ -22,7 +21,6 @@ const KEY_METRICS: Record<string, string[]> = {
   auth: ["failed_logins", "traffic_anomaly"],
   payments: ["payment_error_rate", "latency_ms"],
   database: ["replication_lag_s", "slow_queries"],
-  cache: ["cache_hit_rate", "memory_used_pct"],
 };
 
 export const METRIC: Record<string, { label: string; fmt: (v: number) => string }> = {
@@ -38,9 +36,6 @@ export const METRIC: Record<string, { label: string; fmt: (v: number) => string 
   replication_lag_s: { label: "Replica lag", fmt: (v) => `${v.toFixed(1)} s` },
   slow_queries: { label: "Slow queries", fmt: (v) => v.toFixed(0) },
   lock_waits: { label: "Lock waits", fmt: (v) => v.toFixed(0) },
-  cache_hit_rate: { label: "Hit rate", fmt: (v) => `${(v * 100).toFixed(0)}%` },
-  evictions_per_min: { label: "Evictions/min", fmt: (v) => v.toFixed(0) },
-  memory_used_pct: { label: "Memory", fmt: (v) => `${v.toFixed(0)}%` },
   conn_pool_saturation: { label: "Pool use", fmt: (v) => `${(v * 100).toFixed(0)}%` },
   minutes_since_deploy: { label: "Minutes since last release", fmt: (v) => v.toFixed(0) },
   canary_error_rate: { label: "Canary errors", fmt: (v) => `${(v * 100).toFixed(1)}%` },
@@ -52,15 +47,13 @@ const POS: Record<string, { x: number; y: number }> = {
   gateway: { x: 300, y: 0 },
   auth: { x: 0, y: 175 },
   payments: { x: 560, y: 175 },
-  database: { x: 330, y: 350 },
-  cache: { x: 650, y: 350 },
+  database: { x: 560, y: 350 },
 };
 
 const EDGES: [string, string][] = [
   ["gateway", "auth"],
   ["gateway", "payments"],
   ["payments", "database"],
-  ["payments", "cache"],
 ];
 
 type SvcData = { name: string; svc?: ServiceState };

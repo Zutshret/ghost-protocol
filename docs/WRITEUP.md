@@ -58,7 +58,7 @@ flowchart LR
 - **C, peer negotiation.** No component pools anything; the protocol decides.
 - **D, hybrid.** Runbook first. The router hands over to the agents when no rule matches, when two rules match at once, when the validator blocks the rule's fix, or when the fix fails.
 
-**The simulated platform.** Five services, 30 ticks, a fault starting at tick 5 that ramps up over
+**The simulated platform.** Four services (gateway, auth, payments, database), 30 ticks, a fault starting at tick 5 that ramps up over
 4 ticks. Four hidden root causes: `bad_deploy`, `attack`, `db_fault`, `dependency_timeout`.
 Readings carry about 10% noise and 5% of readings are replaced by random "flaky" values.
 
@@ -252,6 +252,8 @@ of 9.1, because the system stops probing and asks right away.
 - AGNTCY is used for the Directory (agent cards, capability-based recruitment) and for traces. Agent-to-agent
   messaging is not yet A2A over SLIM. With the Directory unreachable, each run waits several seconds on
   timeouts before falling back.
+- Only four services are simulated (no cache). The recruited Network Analyst is chosen by capability; its
+  readings overlap with the Gateway's, so what S3 demonstrates is discovery and recruitment, not extra evidence.
 - Four hypotheses, five core agents. Scaling to many agents is supported by the registry and recruitment design
   but is not yet measured.
 

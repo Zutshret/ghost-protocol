@@ -40,7 +40,6 @@ SERVICE_FEATURES = {
     "auth": ["failed_logins", "suspicious_sources", "traffic_anomaly"],
     "payments": ["payment_error_rate", "queue_depth", "latency_ms"],
     "database": ["replication_lag_s", "slow_queries", "lock_waits"],
-    "cache": ["conn_pool_saturation", "downstream_p99_ms"],
 }
 
 

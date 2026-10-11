@@ -57,7 +57,7 @@ class ScenarioId(str, Enum):
     S5 = "S5"  # ambiguous and high-stakes -> ask a human
 
 
-SERVICES = ["gateway", "auth", "payments", "database", "cache"]
+SERVICES = ["gateway", "auth", "payments", "database"]  # a cache is not simulated
 
 # Which action truly fixes which fault.
 CORRECT_FIX: dict[Hypothesis, Action] = {

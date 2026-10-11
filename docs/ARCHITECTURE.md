@@ -15,8 +15,8 @@ FaultInjector → Simulator ──noisy telemetry──▶ Router
 
 ## Components
 
-- **Simulator** (`simulator/`, stand-in in `standins/sim.py`). Five services
-  (gateway → auth, payments; payments → database, cache), 30 ticks, fault at
+- **Simulator** (`simulator/`, stand-in in `standins/sim.py`). Four services
+  (gateway → auth, payments; payments → database), 30 ticks, fault at
   tick 5, seeded noise and 5% flaky readings.
 - **Router and engine** (`backend/engine.py`). This is plain code. It detects the
   incident, runs the runbook, and switches from deterministic to probabilistic
