@@ -154,7 +154,7 @@ export default function App() {
           </div>
           {derived.error && <div className="rounded-lg border border-red-600 bg-red-950 p-2 text-sm text-red-200">{derived.error}</div>}
 
-          <div className="grid gap-5 xl:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)]">
+          <div className="grid gap-5 xl:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
             <div className="flex min-w-0 flex-col gap-5">
               <Step n={1} title="What broke" help="The payments platform. Failing services glow red; hover a service for all of its numbers.">
                 <ServiceGraph services={derived.services} />

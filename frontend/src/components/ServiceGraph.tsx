@@ -50,10 +50,10 @@ export const METRIC: Record<string, { label: string; fmt: (v: number) => string 
 
 const POS: Record<string, { x: number; y: number }> = {
   gateway: { x: 300, y: 0 },
-  auth: { x: 20, y: 170 },
-  payments: { x: 560, y: 170 },
-  database: { x: 380, y: 340 },
-  cache: { x: 740, y: 340 },
+  auth: { x: 0, y: 175 },
+  payments: { x: 560, y: 175 },
+  database: { x: 330, y: 350 },
+  cache: { x: 650, y: 350 },
 };
 
 const EDGES: [string, string][] = [
@@ -74,20 +74,20 @@ function ServiceNode({ data }: NodeProps<Node<SvcData>>) {
   const shown = (keys.length ? keys : Object.keys(values)).slice(0, 2);
   const all = Object.keys(values);
   return (
-    <div className={`group relative w-60 rounded-2xl border-2 px-4 py-3 transition-all duration-700 ${h.box}`}>
+    <div className={`group relative w-72 rounded-2xl border-2 px-5 py-4 transition-all duration-700 ${h.box}`}>
       <Handle type="target" position={Position.Top} className="!border-0 !bg-slate-600" />
       <div className="flex items-center gap-2">
-        <span className={`h-3 w-3 rounded-full transition-colors duration-700 ${h.dot}`} />
-        <span className="text-lg font-semibold capitalize text-slate-50">{data.name}</span>
-        <span className={`ml-auto text-sm font-semibold ${h.text}`}>{h.label}</span>
+        <span className={`h-3.5 w-3.5 rounded-full transition-colors duration-700 ${h.dot}`} />
+        <span className="text-xl font-semibold capitalize text-slate-50">{data.name}</span>
+        <span className={`ml-auto text-base font-semibold ${h.text}`}>{h.label}</span>
       </div>
-      <div className="mt-2 space-y-1">
+      <div className="mt-2.5 space-y-1.5">
         {shown.length ? shown.map((k) => (
-          <div key={k} className="flex justify-between text-sm">
+          <div key={k} className="flex justify-between text-base">
             <span className="text-slate-400">{METRIC[k]?.label ?? k}</span>
             <span className={`tabular-nums ${lvl(data.svc?.levels[k])}`}>{METRIC[k]?.fmt(values[k]) ?? values[k]}</span>
           </div>
-        )) : <div className="text-sm text-slate-500">waiting for data</div>}
+        )) : <div className="text-base text-slate-500">waiting for data</div>}
       </div>
       {/* full metrics on hover */}
       <div className="pointer-events-none absolute left-1/2 top-full z-50 mt-2 w-64 -translate-x-1/2 rounded-lg border border-slate-700 bg-slate-900 p-3 text-xs opacity-0 shadow-2xl transition-opacity duration-150 group-hover:opacity-100">
@@ -123,7 +123,7 @@ export default function ServiceGraph({ services }: { services: Record<string, Se
   );
   return (
     <div className="h-[460px] w-full xl:h-[540px]">
-      <ReactFlow nodes={nodes} edges={edges} nodeTypes={nodeTypes} fitView fitViewOptions={{ padding: 0.06, maxZoom: 1.25 }}
+      <ReactFlow nodes={nodes} edges={edges} nodeTypes={nodeTypes} fitView fitViewOptions={{ padding: 0.03, maxZoom: 1.5 }}
         proOptions={{ hideAttribution: true }} nodesConnectable={false} elementsSelectable={false}
         panOnDrag={false} zoomOnScroll={false} zoomOnPinch={false} zoomOnDoubleClick={false} preventScrolling={false}>
         <Background color="#1e293b" gap={22} />

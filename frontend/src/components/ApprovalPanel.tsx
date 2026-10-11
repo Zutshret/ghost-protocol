@@ -27,7 +27,7 @@ export default function ApprovalPanel({ esc, onAnswer, onShowProvenance }: {
   const llmBriefing = esc.rationale && !esc.rationale.startsWith("Asking a human:") ? esc.rationale : null;
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/65 p-4">
-      <div className="w-[640px] max-w-full rounded-2xl border border-yellow-400/60 bg-slate-950 shadow-2xl">
+      <div className="w-[720px] max-w-full rounded-2xl border border-yellow-400/60 bg-slate-950 shadow-2xl">
         <div className="flex items-center gap-3 border-b border-slate-800 px-6 py-4">
           <span className="text-2xl">🙋</span>
           <div>
@@ -61,11 +61,11 @@ export default function ApprovalPanel({ esc, onAnswer, onShowProvenance }: {
             ))}
           </div>
           <div className="flex items-center gap-2 pt-1">
-            <button onClick={onShowProvenance} className="text-sm text-violet-300 hover:text-violet-200">Why are we asking? →</button>
+            <button onClick={onShowProvenance} className="whitespace-nowrap text-sm text-violet-300 hover:text-violet-200">Why are we asking? →</button>
             <button disabled={busy} onClick={() => send("reject")}
-              className="ml-auto rounded-lg border border-slate-600 px-4 py-2 text-slate-200 hover:bg-slate-800 disabled:opacity-50">Not now (keep watching)</button>
+              className="ml-auto whitespace-nowrap rounded-lg border border-slate-600 px-4 py-2 text-slate-200 hover:bg-slate-800 disabled:opacity-50">Not now</button>
             <button disabled={busy} onClick={() => send("approve")}
-              className="rounded-lg bg-yellow-400 px-4 py-2 font-semibold text-slate-950 hover:bg-yellow-300 disabled:opacity-50">Approve: {act(choice).toLowerCase()}</button>
+              className="whitespace-nowrap rounded-lg bg-yellow-400 px-4 py-2 font-semibold text-slate-950 hover:bg-yellow-300 disabled:opacity-50">Approve: {act(choice).toLowerCase()}</button>
           </div>
         </div>
       </div>
