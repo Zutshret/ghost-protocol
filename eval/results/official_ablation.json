@@ -45,15 +45,15 @@
    "unnecessary_actions_mean": 0.0,
    "unnecessary_actions_lo": 0.0,
    "unnecessary_actions_hi": 0.037,
-   "escalated_to_human_mean": 0.04,
-   "escalated_to_human_lo": 0.0157,
-   "escalated_to_human_hi": 0.0984,
+   "escalated_to_human_mean": 0.0,
+   "escalated_to_human_lo": 0.0,
+   "escalated_to_human_hi": 0.037,
    "unsafe_action_mean": 0.0,
    "unsafe_action_lo": 0.0,
    "unsafe_action_hi": 0.037,
-   "brier_score_mean": 0.0389,
-   "brier_score_lo": 0.0353,
-   "brier_score_hi": 0.0425
+   "brier_score_mean": 0.0374,
+   "brier_score_lo": 0.0347,
+   "brier_score_hi": 0.04
   },
   {
    "ablated": "none",
@@ -213,9 +213,9 @@
    "unsafe_action_mean": 0.0,
    "unsafe_action_lo": 0.0,
    "unsafe_action_hi": 0.037,
-   "brier_score_mean": 0.1299,
-   "brier_score_lo": 0.0814,
-   "brier_score_hi": 0.1784
+   "brier_score_mean": 0.125,
+   "brier_score_lo": 0.0762,
+   "brier_score_hi": 0.1737
   },
   {
    "ablated": "gateway",
@@ -429,9 +429,9 @@
    "unsafe_action_mean": 0.0,
    "unsafe_action_lo": 0.0,
    "unsafe_action_hi": 0.037,
-   "brier_score_mean": 0.068,
-   "brier_score_lo": 0.0268,
-   "brier_score_hi": 0.1093
+   "brier_score_mean": 0.0674,
+   "brier_score_lo": 0.0261,
+   "brier_score_hi": 0.1086
   },
   {
    "ablated": "payments",
@@ -645,9 +645,9 @@
    "unsafe_action_mean": 0.0,
    "unsafe_action_lo": 0.0,
    "unsafe_action_hi": 0.037,
-   "brier_score_mean": 0.1981,
-   "brier_score_lo": 0.139,
-   "brier_score_hi": 0.2573
+   "brier_score_mean": 0.1979,
+   "brier_score_lo": 0.1387,
+   "brier_score_hi": 0.2571
   },
   {
    "ablated": "database",
@@ -684,24 +684,24 @@
    "correct_diagnosis_mean": 1.0,
    "correct_diagnosis_lo": 0.963,
    "correct_diagnosis_hi": 1.0,
-   "recovery_time_mean": 6.38,
-   "recovery_time_lo": 6.2254,
-   "recovery_time_hi": 6.5346,
-   "availability_mean": 0.9817,
-   "availability_lo": 0.9812,
-   "availability_hi": 0.9821,
+   "recovery_time_mean": 6.28,
+   "recovery_time_lo": 6.1433,
+   "recovery_time_hi": 6.4167,
+   "availability_mean": 0.9819,
+   "availability_lo": 0.9816,
+   "availability_hi": 0.9823,
    "unnecessary_actions_mean": 0.0,
    "unnecessary_actions_lo": 0.0,
    "unnecessary_actions_hi": 0.037,
-   "escalated_to_human_mean": 1.0,
-   "escalated_to_human_lo": 0.963,
-   "escalated_to_human_hi": 1.0,
+   "escalated_to_human_mean": 0.01,
+   "escalated_to_human_lo": 0.0018,
+   "escalated_to_human_hi": 0.0545,
    "unsafe_action_mean": 0.0,
    "unsafe_action_lo": 0.0,
    "unsafe_action_hi": 0.037,
-   "brier_score_mean": 0.132,
-   "brier_score_lo": 0.1289,
-   "brier_score_hi": 0.1351
+   "brier_score_mean": 0.0543,
+   "brier_score_lo": 0.0509,
+   "brier_score_hi": 0.0577
   },
   {
    "ablated": "database",
@@ -909,15 +909,15 @@
    "unnecessary_actions_mean": 0.0,
    "unnecessary_actions_lo": 0.0,
    "unnecessary_actions_hi": 0.037,
-   "escalated_to_human_mean": 0.04,
-   "escalated_to_human_lo": 0.0157,
-   "escalated_to_human_hi": 0.0984,
+   "escalated_to_human_mean": 0.0,
+   "escalated_to_human_lo": 0.0,
+   "escalated_to_human_hi": 0.037,
    "unsafe_action_mean": 0.0,
    "unsafe_action_lo": 0.0,
    "unsafe_action_hi": 0.037,
-   "brier_score_mean": 0.0244,
-   "brier_score_lo": 0.0199,
-   "brier_score_hi": 0.0288
+   "brier_score_mean": 0.0227,
+   "brier_score_lo": 0.0195,
+   "brier_score_hi": 0.0259
   },
   {
    "ablated": "security",
@@ -1077,9 +1077,9 @@
    "unsafe_action_mean": 0.0,
    "unsafe_action_lo": 0.0,
    "unsafe_action_hi": 0.037,
-   "brier_score_mean": 0.0299,
-   "brier_score_lo": 0.0252,
-   "brier_score_hi": 0.0346
+   "brier_score_mean": 0.0292,
+   "brier_score_lo": 0.0248,
+   "brier_score_hi": 0.0336
   },
   {
    "ablated": "deployment",
@@ -1293,9 +1293,9 @@
    "unsafe_action_mean": 0.0,
    "unsafe_action_lo": 0.0,
    "unsafe_action_hi": 0.037,
-   "brier_score_mean": 0.1224,
-   "brier_score_lo": 0.0771,
-   "brier_score_hi": 0.1677
+   "brier_score_mean": 0.1179,
+   "brier_score_lo": 0.0724,
+   "brier_score_hi": 0.1634
   }
  ]
 }

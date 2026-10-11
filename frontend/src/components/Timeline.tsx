@@ -15,7 +15,7 @@ type View = { id: string; top: string; conf: number };
 type Item =
   | { kind: "note"; key: number; tick: number; text: string; tone?: "good" | "warn" }
   | { kind: "views"; key: number; tick: number; views: View[] }
-  | { kind: "exchange"; key: number; tick: number; from: string; to: string; claim: string; doubt: string; answer?: string }
+  | { kind: "exchange"; key: number; tick: number; from: string; to: string; claim: string; doubt: string; confirm?: boolean; answer?: string }
   | { kind: "changed"; key: number; tick: number; who: string; from: View; to: View; because: string }
   | { kind: "rule"; key: number; tick: number; text: string }
   | { kind: "veto"; key: number; tick: number; text: string }
@@ -71,7 +71,7 @@ export function buildTimeline(messages: Msg[], roster: Map<string, AgentSpec>): 
       }
       case "challenge":
         items.push({ kind: "exchange", key: m.id, tick: m.tick, from: m.sender, to: c.target,
-          claim: hyp(c.my_hypothesis), doubt: hyp(c.their_hypothesis) });
+          claim: hyp(c.my_hypothesis), doubt: hyp(c.their_hypothesis), confirm: c.kind === "confirm" });
         break;
       case "evidence":
         if (roster.has(m.sender)) {
@@ -187,8 +187,10 @@ function Body({ it, roster }: { it: Item; roster: Map<string, AgentSpec> }) {
     case "exchange":
       return (
         <div className="rounded-xl border border-slate-800 bg-slate-900/60 px-3.5 py-2.5 hover:border-slate-600">
-          <p className="text-[15px] text-slate-200"><Name id={it.from} roster={roster} /> questions <Name id={it.to} roster={roster} />:
-            <span className="text-slate-300"> "I think it's {it.claim.toLowerCase()}, not {it.doubt.toLowerCase()}. What's your evidence?"</span>{time}</p>
+          <p className="text-[15px] text-slate-200"><Name id={it.from} roster={roster} /> {it.confirm ? "asks" : "questions"} <Name id={it.to} roster={roster} />:
+            <span className="text-slate-300"> {it.confirm
+              ? `"We both lean ${it.claim.toLowerCase()}, but this fix is risky and I'm not sure enough. What's your evidence?"`
+              : `"I think it's ${it.claim.toLowerCase()}, not ${it.doubt.toLowerCase()}. What's your evidence?"`}</span>{time}</p>
           {it.answer && <p className="mt-1 text-sm text-slate-400">↳ <Name id={it.to} roster={roster} /> shares its data: {it.answer}</p>}
         </div>
       );

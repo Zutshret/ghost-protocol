@@ -12,8 +12,8 @@ Recovery time = ticks from fault start until healthy (30 = never recovered). Wro
 |---|---|---|---|---|---|---|---|
 | A Runbook | 100% (96% to 100%) | 6.3 (6.1 to 6.4) | 98% (98% to 98%) | 0.00 (0.00 to 0.04) | 0% (0% to 4%) | 0% (0% to 4%) | n/a (no probabilities) |
 | B Agents + aggregator | 100% (96% to 100%) | 6.0 (6.0 to 6.1) | 98% (98% to 98%) | 0.00 (0.00 to 0.04) | 0% (0% to 4%) | 0% (0% to 4%) | 0.000 (-0.000 to 0.000) |
-| C Peer negotiation | 100% (96% to 100%) | 6.0 (6.0 to 6.1) | 98% (98% to 98%) | 0.00 (0.00 to 0.04) | 4% (2% to 10%) | 0% (0% to 4%) | 0.039 (0.035 to 0.043) |
-| D Hybrid | 100% (96% to 100%) | 6.0 (6.0 to 6.1) | 98% (98% to 98%) | 0.00 (0.00 to 0.04) | 4% (2% to 10%) | 0% (0% to 4%) | 0.008 (0.003 to 0.012) |
+| C Peer negotiation | 100% (96% to 100%) | 6.0 (6.0 to 6.1) | 98% (98% to 98%) | 0.00 (0.00 to 0.04) | 0% (0% to 4%) | 0% (0% to 4%) | 0.037 (0.035 to 0.040) |
+| D Hybrid | 100% (96% to 100%) | 6.0 (6.0 to 6.1) | 98% (98% to 98%) | 0.00 (0.00 to 0.04) | 0% (0% to 4%) | 0% (0% to 4%) | 0.006 (0.003 to 0.009) |
 
 ### S2: deploy that looks like an attack
 
@@ -39,7 +39,7 @@ Recovery time = ticks from fault start until healthy (30 = never recovered). Wro
 |---|---|---|---|---|---|---|---|
 | A Runbook | 0% (0% to 4%) | 30.0 (30.0 to 30.0) | 87% (87% to 87%) | 2.01 (1.99 to 2.03) | 0% (0% to 4%) | 0% (0% to 4%) | n/a (no probabilities) |
 | B Agents + aggregator | 97% (92% to 99%) | 9.1 (9.0 to 9.3) | 97% (97% to 97%) | 0.03 (0.01 to 0.08) | 100% (96% to 100%) | 0% (0% to 4%) | 0.061 (0.003 to 0.119) |
-| C Peer negotiation | 98% (93% to 99%) | 6.2 (6.1 to 6.4) | 98% (98% to 98%) | 0.02 (0.01 to 0.07) | 100% (96% to 100%) | 0% (0% to 4%) | 0.130 (0.081 to 0.178) |
+| C Peer negotiation | 98% (93% to 99%) | 6.2 (6.1 to 6.4) | 98% (98% to 98%) | 0.02 (0.01 to 0.07) | 100% (96% to 100%) | 0% (0% to 4%) | 0.125 (0.076 to 0.174) |
 | D Hybrid | 94% (88% to 97%) | 8.2 (8.0 to 8.4) | 97% (97% to 98%) | 0.06 (0.03 to 0.12) | 100% (96% to 100%) | 0% (0% to 4%) | 0.358 (0.274 to 0.442) |
 
 ## 2. Paired difference versus the runbook (same seeds)
@@ -81,11 +81,11 @@ Right first time and 'asked a human' for each mode, with the named agent blind. 
 
 | Team | S1: right / asked human | S2: right / asked human | S3: right / asked human | S5: right / asked human |
 |---|---|---|---|---|
-| (full team) | 100% / 4% | 100% / 0% | 100% / 0% | 98% / 100% |
+| (full team) | 100% / 0% | 100% / 0% | 100% / 0% | 98% / 100% |
 | without gateway | 100% / 0% | 100% / 0% | 100% / 0% | 97% / 100% |
 | without payments | 100% / 0% | 100% / 0% | 100% / 0% | 99% / 100% |
-| without database | 100% / 100% | 100% / 0% | 100% / 0% | 8% / 100% |
-| without security | 100% / 4% | 100% / 0% | 100% / 0% | 100% / 100% |
+| without database | 100% / 1% | 100% / 0% | 100% / 0% | 8% / 100% |
+| without security | 100% / 0% | 100% / 0% | 100% / 0% | 100% / 100% |
 | without deployment | 100% / 4% | 100% / 0% | 100% / 0% | 98% / 100% |
 
 ## 4. Decision rule variants (Mode B)

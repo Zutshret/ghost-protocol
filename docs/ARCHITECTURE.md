@@ -53,6 +53,8 @@ FaultInjector → Simulator ──noisy telemetry──▶ Router
      strongest evidence and asking for theirs.
   3. Both agents update their beliefs.
   4. Everyone votes.
+  If the whole team names one cause but the Database agent is below its 85% veto bar for a
+  failover, it asks its agreeing peers for evidence first (block_traffic gets no such round).
   A proposal passes with a two-thirds quorum and no veto, and risky actions need a
   unanimous vote. If nothing passes within 4 rounds, the team escalates to a human.
   No component pools beliefs or chooses the outcome.

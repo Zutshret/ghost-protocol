@@ -69,15 +69,15 @@
    "unnecessary_actions_mean": 0.0,
    "unnecessary_actions_lo": 0.0,
    "unnecessary_actions_hi": 0.037,
-   "escalated_to_human_mean": 0.04,
-   "escalated_to_human_lo": 0.0157,
-   "escalated_to_human_hi": 0.0984,
+   "escalated_to_human_mean": 0.0,
+   "escalated_to_human_lo": 0.0,
+   "escalated_to_human_hi": 0.037,
    "unsafe_action_mean": 0.0,
    "unsafe_action_lo": 0.0,
    "unsafe_action_hi": 0.037,
-   "brier_score_mean": 0.0389,
-   "brier_score_lo": 0.0353,
-   "brier_score_hi": 0.0425
+   "brier_score_mean": 0.0374,
+   "brier_score_lo": 0.0347,
+   "brier_score_hi": 0.04
   },
   {
    "scenario": "S1",
@@ -95,15 +95,15 @@
    "unnecessary_actions_mean": 0.0,
    "unnecessary_actions_lo": 0.0,
    "unnecessary_actions_hi": 0.037,
-   "escalated_to_human_mean": 0.04,
-   "escalated_to_human_lo": 0.0157,
-   "escalated_to_human_hi": 0.0984,
+   "escalated_to_human_mean": 0.0,
+   "escalated_to_human_lo": 0.0,
+   "escalated_to_human_hi": 0.037,
    "unsafe_action_mean": 0.0,
    "unsafe_action_lo": 0.0,
    "unsafe_action_hi": 0.037,
-   "brier_score_mean": 0.0076,
-   "brier_score_lo": 0.003,
-   "brier_score_hi": 0.0122
+   "brier_score_mean": 0.0061,
+   "brier_score_lo": 0.0028,
+   "brier_score_hi": 0.0094
   },
   {
    "scenario": "S2",
@@ -387,9 +387,9 @@
    "unsafe_action_mean": 0.0,
    "unsafe_action_lo": 0.0,
    "unsafe_action_hi": 0.037,
-   "brier_score_mean": 0.1299,
-   "brier_score_lo": 0.0814,
-   "brier_score_hi": 0.1784
+   "brier_score_mean": 0.125,
+   "brier_score_lo": 0.0762,
+   "brier_score_hi": 0.1737
   },
   {
    "scenario": "S5",
@@ -3638,8 +3638,8 @@
    "availability": 0.9827,
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
-   "escalated_to_human": true,
-   "brier_score": 0.0871,
+   "escalated_to_human": false,
+   "brier_score": 0.0637,
    "llm_calls": 0,
    "unsafe_action": false,
    "ablated": null
@@ -3998,8 +3998,8 @@
    "availability": 0.9827,
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
-   "escalated_to_human": true,
-   "brier_score": 0.0871,
+   "escalated_to_human": false,
+   "brier_score": 0.0638,
    "llm_calls": 0,
    "unsafe_action": false,
    "ablated": null
@@ -4073,8 +4073,8 @@
    "availability": 0.9827,
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
-   "escalated_to_human": true,
-   "brier_score": 0.1483,
+   "escalated_to_human": false,
+   "brier_score": 0.0576,
    "llm_calls": 0,
    "unsafe_action": false,
    "ablated": null
@@ -4703,8 +4703,8 @@
    "availability": 0.9827,
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
-   "escalated_to_human": true,
-   "brier_score": 0.0746,
+   "escalated_to_human": false,
+   "brier_score": 0.0593,
    "llm_calls": 0,
    "unsafe_action": false,
    "ablated": null
@@ -5138,8 +5138,8 @@
    "availability": 0.9827,
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
-   "escalated_to_human": true,
-   "brier_score": 0.0871,
+   "escalated_to_human": false,
+   "brier_score": 0.0637,
    "llm_calls": 0,
    "unsafe_action": false,
    "ablated": null
@@ -5498,8 +5498,8 @@
    "availability": 0.9827,
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
-   "escalated_to_human": true,
-   "brier_score": 0.0871,
+   "escalated_to_human": false,
+   "brier_score": 0.0638,
    "llm_calls": 0,
    "unsafe_action": false,
    "ablated": null
@@ -5573,8 +5573,8 @@
    "availability": 0.9827,
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
-   "escalated_to_human": true,
-   "brier_score": 0.1483,
+   "escalated_to_human": false,
+   "brier_score": 0.0576,
    "llm_calls": 0,
    "unsafe_action": false,
    "ablated": null
@@ -6203,8 +6203,8 @@
    "availability": 0.9827,
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
-   "escalated_to_human": true,
-   "brier_score": 0.0746,
+   "escalated_to_human": false,
+   "brier_score": 0.0593,
    "llm_calls": 0,
    "unsafe_action": false,
    "ablated": null
@@ -21804,7 +21804,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": true,
-   "brier_score": 0.0684,
+   "brier_score": 0.0242,
    "llm_calls": 0,
    "unsafe_action": false,
    "ablated": null
@@ -21894,7 +21894,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": true,
-   "brier_score": 0.0997,
+   "brier_score": 0.0496,
    "llm_calls": 0,
    "unsafe_action": false,
    "ablated": null
@@ -22164,7 +22164,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": true,
-   "brier_score": 0.0997,
+   "brier_score": 0.0496,
    "llm_calls": 0,
    "unsafe_action": false,
    "ablated": null
@@ -22179,7 +22179,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": true,
-   "brier_score": 0.0997,
+   "brier_score": 0.0496,
    "llm_calls": 0,
    "unsafe_action": false,
    "ablated": null
@@ -22224,7 +22224,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": true,
-   "brier_score": 0.0997,
+   "brier_score": 0.0496,
    "llm_calls": 0,
    "unsafe_action": false,
    "ablated": null
@@ -22449,7 +22449,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": true,
-   "brier_score": 0.0998,
+   "brier_score": 0.0497,
    "llm_calls": 0,
    "unsafe_action": false,
    "ablated": null
@@ -22539,7 +22539,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": true,
-   "brier_score": 0.0997,
+   "brier_score": 0.0496,
    "llm_calls": 0,
    "unsafe_action": false,
    "ablated": null
@@ -22584,7 +22584,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": true,
-   "brier_score": 0.0997,
+   "brier_score": 0.0496,
    "llm_calls": 0,
    "unsafe_action": false,
    "ablated": null
@@ -22644,7 +22644,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": true,
-   "brier_score": 0.0997,
+   "brier_score": 0.0496,
    "llm_calls": 0,
    "unsafe_action": false,
    "ablated": null
@@ -22914,7 +22914,7 @@
    "unnecessary_actions": 0,
    "correct_diagnosis": true,
    "escalated_to_human": true,
-   "brier_score": 0.0997,
+   "brier_score": 0.0496,
    "llm_calls": 0,
    "unsafe_action": false,
    "ablated": null
