@@ -6,6 +6,12 @@ Protocol, per round (max MAX_ROUNDS):
   2. Every agent CHALLENGEs the most confident peer that disagrees with it,
      sharing its own strongest evidence and asking for the peer's. The peer
      replies with EVIDENCE from its own data. Both update via the belief engine.
+  2b. Confirmation: if the leading action would be vetoed by a safety-critical
+     agent only because it is not sure enough, that agent asks the peers who
+     already back the same cause for their evidence. Peers who agree never
+     challenge each other, so without this step a vetoing agent never hears the
+     evidence that would settle its doubt. Its belief only rises if the
+     evidence supports it.
   3. The most-supported proposals are put to a vote. Each agent votes ACCEPT,
      REJECT or VETO from its own belief and goal. A proposal passes with at
      least 2/3 ACCEPT and no VETO from a safety-critical agent. Risky actions
@@ -23,11 +29,17 @@ from typing import Callable
 
 from agents.agent_base import Agent, fmt_belief, top
 from backend.adapters import validate
-from shared.types import Action, Message, MessageType
+from shared.types import CORRECT_FIX, Action, Message, MessageType
 
 MAX_ROUNDS = 4
 QUORUM = 2 / 3
 EVIDENCE_PER_REPLY = 2
+CONFIRMATION = True  # step 2b; a switch so evaluations can show the before/after
+# Only failover gets a confirmation round. block_traffic locks out real customers, and the
+# Gateway's veto on it is the net that catches a team fooled by an attack-looking decoy
+# (measured: letting peers lift that veto turned 4 of 100 payments-blind S5 runs into a
+# wrong block_traffic), so that veto stays strict.
+CONFIRMABLE = {Action.FAILOVER_DB}
 
 
 @dataclass
@@ -38,6 +50,17 @@ class Outcome:
     provenance: list[int] = field(default_factory=list)
     votes: dict[str, str] = field(default_factory=dict)
     rounds: int = 0
+
+
+def _leading_action(agents: list[Agent], probes_used: int, max_probes: int) -> Action:
+    """The action the team currently leans to (same weighting as the vote step)."""
+    support: dict[Action, float] = {}
+    for a in agents:
+        act = a.preferred_action()
+        if act == Action.PROBE and probes_used >= max_probes:
+            act = max(a.utilities(), key=a.utilities().get)
+        support[act] = support.get(act, 0) + 1 + top(a.belief)[1] / 10
+    return max(support, key=support.get)
 
 
 def negotiate(
@@ -55,6 +78,7 @@ def negotiate(
     need = math.ceil(QUORUM * n)
     last_post = {a.id: (top(a.belief)[0], top(a.belief)[1]) for a in agents}
     asked: set[tuple[str, str]] = set()
+    confirmed: set[tuple[str, str]] = set()
     last_votes: dict[str, str] = {}
 
     def post(m: Message) -> Message:
@@ -114,6 +138,38 @@ def negotiate(
                                   "challenger_learned": list(x_new), "i_learned": list(y_new)},
                          rationale=(f"@{x.id}: from my own data, " + ", ".join(f"{f} is {l.value}" for f, l in theirs.items())
                                     if theirs else f"@{x.id}: I have no evidence to share (ablated).")))
+
+        # 2b. confirmation: a doubtful safety-critical agent asks agreeing peers for evidence
+        lead = _leading_action(agents, probes_used, max_probes)
+        cause = next((h for h, fix in CORRECT_FIX.items() if fix == lead), None)
+        # Only when the whole team already names the same cause. If anyone still disagrees, the
+        # veto must stand: peers who share a (possibly decoy-driven) view could otherwise talk a
+        # safety-critical agent past its own veto.
+        unanimous = cause is not None and all(top(a.belief)[0] == cause for a in agents)
+        if CONFIRMATION and unanimous and lead in CONFIRMABLE:
+            for x in agents:
+                if x.veto_reason(lead, state) is None or top(x.belief)[0] != cause:
+                    continue
+                runner_up = max((h for h in x.belief if h != cause), key=x.belief.get)
+                for y in sorted((y for y in agents if y is not x and top(y.belief)[0] == cause
+                                 and (x.id, y.id) not in confirmed),
+                                key=lambda r: top(r.belief)[1], reverse=True):
+                    confirmed.add((x.id, y.id))
+                    px = x.belief[cause]
+                    post(Message(run_id=run_id, tick=tick, sender=x.id, type=MessageType.CHALLENGE,
+                                 content={"target": y.id, "round": rnd, "kind": "confirm",
+                                          "my_hypothesis": cause.value, "their_hypothesis": cause.value},
+                                 rationale=(f"@{y.id}: we both lean {cause.value}, but I'm only {px:.0%} sure and "
+                                            f"{lead.value} is risky. What evidence do you have?")))
+                    theirs = {f: y.own_levels[f] for f in y.discriminating_features(cause, runner_up)[:EVIDENCE_PER_REPLY]}
+                    x_new = x.learn(y.id, theirs)
+                    post(Message(run_id=run_id, tick=tick, sender=y.id, type=MessageType.EVIDENCE,
+                                 content={"to": x.id, "round": rnd, "kind": "confirm",
+                                          "evidence": {f: l.value for f, l in theirs.items()},
+                                          "values": {f: y.obs.values.get(f) for f in theirs} if y.obs else {},
+                                          "challenger_learned": list(x_new), "i_learned": []},
+                                 rationale=(f"@{x.id}: from my own data, " + ", ".join(f"{f} is {l.value}" for f, l in theirs.items())
+                                            if theirs else f"@{x.id}: I have no evidence to share (ablated).")))
 
         # 3. vote on the most-supported proposals (after everyone updated)
         for a in agents:

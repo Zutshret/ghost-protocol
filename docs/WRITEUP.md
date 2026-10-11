@@ -106,7 +106,10 @@ are used, about 58% and 80%. A fix the validator blocks is never acted on. Every
 **Negotiation (Mode C).** Per round: every agent proposes; each challenges the most confident
 disagreeing peer with its strongest discriminating evidence and asks for theirs; both update; everyone
 votes accept, reject or veto. A proposal passes with a 2/3 quorum and no safety veto; risky actions need
-everyone. No agreement in 4 rounds means escalate to a human.
+everyone. If the whole team already names the same cause but the Database agent is not yet sure enough to
+allow a failover, it asks its agreeing peers for their evidence before the vote (peers who agree never
+challenge each other, so otherwise it would never hear it). Its belief rises only if that evidence supports it.
+No agreement in 4 rounds means escalate to a human.
 
 **Safety validator.** Plain code with the last word in every mode. Failover is safe below 5 s of
 replication lag, risky between 5 and 12 s, blocked above 12 s unless a human approves. Blocking traffic is
@@ -147,7 +150,7 @@ Directory and trace pipeline from Cisco's coffeeAGNTCY setup up:
   would add risk without a visible benefit; the bus interface is publish/subscribe only so it can be swapped in.
   A spike showed SLIM working in coffeeAGNTCY's own demo (one trace spanning exchange, SLIM and farm).
 
-**Engineering.** 108 automated tests (simulator determinism, partial observability, validator, runbook,
+**Engineering.** 111 automated tests (simulator determinism, partial observability, validator, runbook,
 belief math, decision rule, voice guard, engine behaviour, AGNTCY on/off and fallback). Everything is seeded
 and repeatable.
 
@@ -196,7 +199,9 @@ What this says:
 
 **Ablation: remove one agent's evidence** (Mode B, S5 right-first-time): full team 97%; without Database
 **0%**; without Payments 95%; without Deployment 98%; without Gateway 100%; without Security **100%**.
-In Mode C, removing Database also makes S1 escalate to a human every time.
+In Mode C, removing Database makes S1 escalate to a human only 1% of the time, because the blind Database agent
+confirms with its peers; before that confirmation step existed it escalated every time, and 4% of full-team S1
+runs also escalated for the same reason.
 
 **LLM on versus off** (`eval/results/LLM_PROOF.md`): 8 incidents (S2 and S5, Modes B and C, 2 seeds), every
 action, escalation, recovery time and correctness identical with the LLM on and off; 36 LLM-written lines,
@@ -249,7 +254,7 @@ of 9.1, because the system stops probing and asks right away.
 
 ```bash
 uv sync && cp .env.example .env            # add one LLM key (optional)
-uv run pytest                              # 108 tests
+uv run pytest                              # 111 tests
 uv run python eval/evaluate.py             # all tables above, about a minute
 uv run python eval/evaluate_llm.py         # LLM on versus off (needs a key)
 uv run python scripts/warm_llm_cache.py    # before demoing with the LLM box ticked
