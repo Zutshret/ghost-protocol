@@ -51,6 +51,7 @@ const PHASE: Record<string, { label: string; cls: string }> = {
   runbook: { label: "The fixed rule is handling it", cls: "bg-slate-700 text-white" },
   agents: { label: "The AI agents are handling it", cls: "bg-violet-600/30 text-violet-100" },
   resolved: { label: "Resolved", cls: "bg-emerald-600/25 text-emerald-200" },
+  failed: { label: "Run over: not recovered", cls: "bg-red-600/25 text-red-200" },
 };
 
 export default function App() {
@@ -98,7 +99,8 @@ export default function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const phase = derived.mode?.mode ?? (runId ? "monitoring" : "idle");
+  const phase = derived.metrics && derived.mode?.mode !== "resolved" ? "failed"
+    : derived.mode?.mode ?? (runId ? "monitoring" : "idle");
   const ph = PHASE[phase] ?? PHASE.idle;
   const openById = (id: number) => setSelected(derived.byId.get(id) ?? null);
   const run = derived.start?.content;
@@ -137,7 +139,8 @@ export default function App() {
           <div className="flex flex-wrap items-center gap-4">
             <span className={`rounded-full px-4 py-1.5 text-sm font-semibold transition-colors duration-500 ${ph.cls}`}>{ph.label}</span>
             {derived.mode?.reason && phase !== "idle" && <span className="max-w-xl truncate text-sm text-slate-400" title={derived.mode.reason}>
-              {phase === "resolved" ? `All services healthy again at minute ${derived.mode.tick}.` : derived.mode.reason}</span>}
+              {phase === "resolved" ? `All services healthy again at minute ${derived.mode.tick}.`
+                : phase === "failed" ? "The system was still failing when the 30 minutes ran out." : derived.mode.reason}</span>}
             <div className="ml-auto flex items-center gap-5 text-sm text-slate-400">
               <div className="flex items-center gap-2">
                 <span>Minute {derived.tick} of 30<Info text="The simulation runs 30 ticks (think: minutes). The fault starts at minute 5." /></span>
