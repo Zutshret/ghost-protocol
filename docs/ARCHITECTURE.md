@@ -30,12 +30,23 @@ FaultInjector → Simulator ──noisy telemetry──▶ Router
   raw log lines and returns feature levels plus a plain-English reason. The levels
   are cross-checked against the measured numbers. **The LLM never produces
   probabilities.**
+- **Voice** (`agents/voice.py`). The LLM writes what agents *say*: challenges, the
+  aggregator's explanation, the briefing a human reads before approving, and the
+  end-of-run summary. The code has already decided what they *do*. A
+  faithfulness guard rejects any sentence that invents a number, cause or action,
+  and the template text is used instead.
 - **Beliefs.** Each agent's beliefs come from a Bayesian update over 4 hypotheses
   using likelihood tables `P(level | hypothesis)`. Mode B pools them with a
   log-opinion pool.
-- **Mode B: central aggregator.** It pools beliefs, then applies one decision rule:
-  act if the top hypothesis clears the threshold (stricter for risky actions) and
-  the validator allows it; otherwise probe (at most 2); otherwise escalate.
+- **Mode B: central aggregator.** It pools beliefs, then applies an expected-cost
+  decision rule (`intelligence/decision.py`). There are no fixed confidence
+  thresholds. Each choice is priced in "ticks of pain": act on the best fix the
+  validator allows, probe first (at most 2 probes), or ask a human. The cheapest
+  choice wins. Acting wrongly costs a wasted hold period, plus extra harm if the
+  action is risky (`block_traffic`, `failover_db`), plus still needing a human. A
+  probe costs a tick but halves the chance of being wrong. A human costs a fixed
+  delay. As a result, cheap fixes are taken at modest confidence and risky ones
+  only at high confidence, and the validator always has the last word.
 - **Mode C: peer negotiation** (`agents/negotiation.py`). Each round has four steps:
   1. Every agent proposes an action.
   2. Every agent challenges the most confident peer that disagrees, sharing its own
@@ -67,8 +78,10 @@ FaultInjector → Simulator ──noisy telemetry──▶ Router
 
 The system escalates to a human when either of these is true:
 
-- **Mode B:** after 2 probes, the top hypothesis is still below threshold (0.75 for
-  safe actions, 0.9 for risky ones), or the validator blocks the action.
+- **Mode B:** asking a human is the cheapest choice under the expected-cost rule.
+  That happens when the remaining risk of acting wrongly (especially with a risky
+  action) costs more than a human's delay and probing no longer helps, or when the
+  validator blocks every fix worth taking.
 - **Mode C:** no proposal gets a two-thirds quorum without a veto within 4 rounds,
   or a risky action fails to get a unanimous vote.
 
@@ -77,7 +90,16 @@ fresh data. Every escalation shows the options with their probabilities and risk
 
 ## LLM usage
 
-There is one call per agent per deliberation, made only after the router hands
-over. Calls are cached on disk, so repeated runs are free. On S2 in Mode C that
-is 5 calls the first time and 0 on a re-run. With no key set, the system runs
-deterministically with template reasons.
+The LLM is only used when the console's **LLM** box (or `use_llm`) is on, and only
+at decision points, never every tick:
+
+- **Evidence:** one call per agent per deliberation, after the router hands over.
+- **Voice:** challenges in Mode C, the aggregator's explanation in Mode B, the
+  human briefing on escalation, and one summary at the end of a run.
+
+Answers are cached on disk (`.cache/llm`), so repeated runs are free:
+`scripts/warm_llm_cache.py` pre-runs the demo incidents. Real calls are throttled
+(`LLM_MAX_RPM`, default 12 per minute, for free tiers), and a rate-limit error is
+retried after the wait the provider asks for. With no key, or if a call fails, the
+system runs deterministically with template text. The LLM never decides anything:
+actions, beliefs, votes and escalations all come from code.

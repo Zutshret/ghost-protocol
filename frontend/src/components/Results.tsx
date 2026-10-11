@@ -18,7 +18,8 @@ export default function Results() {
   useEffect(() => {
     fetch("/api/results").then((r) => r.json()).then((d) => {
       setData(d);
-      setFile(Object.keys(d).find((k) => d[k]?.summary) ?? "");
+      // Open on Person A's official evaluation when it exists.
+      setFile(d.official?.summary ? "official" : Object.keys(d).find((k) => d[k]?.summary) ?? "");
     });
   }, []);
   if (!data) return <div className="p-6 text-slate-400">Loading…</div>;
