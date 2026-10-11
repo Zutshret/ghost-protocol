@@ -1,42 +1,57 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import AgentRoster from "./components/AgentRoster";
 import ApprovalPanel from "./components/ApprovalPanel";
 import DetailDrawer from "./components/DetailDrawer";
+import Header from "./components/Header";
+import HowTo, { seenHowTo } from "./components/HowTo";
+import Info from "./components/Info";
 import Ledger from "./components/Ledger";
+import { DecisionCard, ResultCard } from "./components/Outcome";
 import Results from "./components/Results";
 import ServiceGraph from "./components/ServiceGraph";
+import Timeline from "./components/Timeline";
+import { act, hyp } from "./labels";
 import type { AgentSpec, Msg } from "./types";
 import { useRun, type RunConfig } from "./useRun";
 
-const SCENARIO_HELP: Record<string, string> = {
-  S1: "Clear database fault (runbook should win)",
-  S2: "Bad deploy that looks like an attack",
-  S3: "Dependency timeout (specialist recruited)",
-  S5: "Ambiguous + high-stakes (ask a human)",
-};
-const MODE_HELP: Record<string, string> = {
-  A: "Runbook only",
-  B: "Agents + central aggregator",
-  C: "Agents negotiate peer-to-peer",
-  D: "Hybrid: runbook first, then agents",
-};
-
-function ModeIndicator({ mode }: { mode: { mode: string; reason: string } | null }) {
-  const m = mode?.mode ?? "idle";
-  const style =
-    m === "runbook" ? "bg-slate-600/30 border-slate-400 text-slate-100"
-      : m === "agents" ? "bg-violet-600/30 border-violet-400 text-violet-100"
-        : m === "resolved" ? "bg-emerald-600/30 border-emerald-400 text-emerald-100"
-          : "bg-slate-800 border-slate-700 text-slate-400";
-  const label = m === "runbook" ? "RUNBOOK MODE · deterministic" : m === "agents" ? "AGENT MODE · probabilistic"
-    : m === "resolved" ? "RESOLVED" : "MONITORING";
-  return (
-    <div className={`flex items-center gap-3 rounded-lg border px-3 py-1.5 ${style} min-w-0`}>
-      <span className="font-bold text-xs tracking-wider whitespace-nowrap">{label}</span>
-      {mode?.reason && <span className="text-xs opacity-80 truncate" title={mode.reason}>{mode.reason}</span>}
+function Step({ n, title, help, children, className = "", right, collapsible, open = true, onToggle, summary }: {
+  n: number; title: string; help: string; children: React.ReactNode; className?: string; right?: React.ReactNode;
+  collapsible?: boolean; open?: boolean; onToggle?: () => void; summary?: React.ReactNode;
+}) {
+  const head = (
+    <div className="flex w-full items-center gap-3 text-left">
+      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-violet-600/20 text-sm font-bold text-violet-300">{n}</span>
+      <div className="min-w-0 flex-1">
+        <h2 className="text-xl font-semibold leading-tight text-slate-50">{title}</h2>
+        {collapsible && !open
+          ? <div className="mt-0.5 truncate text-[15px] text-slate-300">{summary}</div>
+          : <p className="text-sm text-slate-400">{help}</p>}
+      </div>
+      {right && <div className="shrink-0">{right}</div>}
+      {collapsible && (
+        <span className={`flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1 text-sm transition-colors ${open ? "border-violet-500/60 text-violet-200" : "border-slate-700 text-slate-300"}`}>
+          {open ? "Hide" : "Show"} <span className={`transition-transform duration-300 ${open ? "rotate-180" : ""}`}>▾</span>
+        </span>
+      )}
     </div>
   );
+  return (
+    <section className={`flex min-h-0 flex-col rounded-2xl border border-slate-800/80 bg-slate-950/60 p-5 shadow-[0_1px_0_rgba(255,255,255,0.03)_inset] ${className}`}>
+      {collapsible
+        ? <button onClick={onToggle} aria-expanded={open} className="rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-violet-500">{head}</button>
+        : head}
+      {(!collapsible || open) && <div className="mt-4 flex min-h-0 flex-1 flex-col">{children}</div>}
+    </section>
+  );
 }
+
+const PHASE: Record<string, { label: string; cls: string }> = {
+  idle: { label: "Ready: pick an incident and press Run", cls: "bg-slate-800 text-slate-300" },
+  monitoring: { label: "Watching the system", cls: "bg-slate-800 text-slate-200" },
+  runbook: { label: "The fixed rule is handling it", cls: "bg-slate-700 text-white" },
+  agents: { label: "The AI agents are handling it", cls: "bg-violet-600/30 text-violet-100" },
+  resolved: { label: "Resolved", cls: "bg-emerald-600/25 text-emerald-200" },
+};
 
 export default function App() {
   const { runId, messages, derived, meta, connected, start, stop, answer } = useRun();
@@ -47,123 +62,136 @@ export default function App() {
   });
   const [selected, setSelected] = useState<Msg | null>(null);
   const [agentFilter, setAgentFilter] = useState<string | null>(null);
+  const [fullLedger, setFullLedger] = useState(false);
+  const [help, setHelp] = useState(false);
+  const [official, setOfficial] = useState<any[] | null>(null);
+  const [showAgents, setShowAgents] = useState(false);
+  const [showOutcome, setShowOutcome] = useState(false);
   const roster = useMemo(() => new Map<string, AgentSpec>(derived.agents.map((a) => [a.spec.id, a.spec])), [derived.agents]);
   const running = !!runId && !derived.metrics && !derived.error;
   const set = (k: keyof RunConfig, v: any) => setCfg((c) => ({ ...c, [k]: v }));
-  const err = derived.availability.length ? derived.services : null;
   const lastTel = [...messages].reverse().find((m) => m.type === "telemetry" && m.content.services && !m.content.event);
+  const started = useRef(false);
+
+  useEffect(() => {
+    const q = new URLSearchParams(location.search);
+    if (!seenHowTo() && !q.get("autorun") && !q.get("tab")) setHelp(true);
+    fetch("/api/results").then((r) => r.json()).then((d) => setOfficial(d.official?.summary ?? null)).catch(() => {});
+  }, []);
+
+  // Shareable demo links: ?scenario=S5&mode=C&seed=1&speed=0&autorun=1
+  useEffect(() => {
+    if (started.current) return;
+    started.current = true;
+    const q = new URLSearchParams(location.search);
+    const next = { ...cfg };
+    if (q.get("scenario")) next.scenario = q.get("scenario")!;
+    if (q.get("mode")) next.mode = q.get("mode")!;
+    if (q.get("seed")) next.seed = Number(q.get("seed"));
+    if (q.get("speed")) next.tick_delay = Number(q.get("speed"));
+    if (q.get("autorun") === "1") { setHelp(false); start(next); }
+    if (q.get("tab") === "results") { setHelp(false); setTab("results"); }
+    const opened = (q.get("open") ?? "").split(",");
+    if (opened.includes("2")) setShowAgents(true);
+    if (opened.includes("4")) setShowOutcome(true);
+    setCfg(next);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const phase = derived.mode?.mode ?? (runId ? "monitoring" : "idle");
+  const ph = PHASE[phase] ?? PHASE.idle;
+  const openById = (id: number) => setSelected(derived.byId.get(id) ?? null);
+  const run = derived.start?.content;
+
+  const thinking = derived.agents.filter((a) => a.belief);
+  const votes = new Map<string, number>();
+  for (const a of thinking) {
+    const top = Object.entries(a.belief!).sort((x, y) => y[1] - x[1])[0][0];
+    votes.set(top, (votes.get(top) ?? 0) + 1);
+  }
+  const lead = [...votes.entries()].sort((x, y) => y[1] - x[1])[0];
+  const agentsSummary = lead
+    ? <span>{lead[1]} of {thinking.length} agents think it's <b className="text-white">{hyp(lead[0])}</b>{votes.size > 1 ? <span className="text-slate-400"> · {votes.size - 1} other view{votes.size > 2 ? "s" : ""}</span> : null}</span>
+    : <span className="text-slate-400">{derived.agents.length} AI agents standing by, each watching a different part of the system</span>;
+  const decision = [...messages].reverse().find((m) => m.type === "action" && m.content.action !== "probe");
+  const mt = derived.metrics;
+  const outcomeSummary = mt
+    ? <span><b className={mt.recovery_time < 30 ? "text-emerald-300" : "text-red-300"}>{mt.recovery_time < 30 ? `Recovered in ${mt.recovery_time} min` : "Did not recover"}</b>
+        <span className="text-slate-400"> · {mt.unnecessary_actions} wrong fix{mt.unnecessary_actions === 1 ? "" : "es"} · {mt.escalated_to_human ? "asked a human" : "no human needed"}{decision ? ` · ${act(decision.content.action).toLowerCase()}` : ""}</span></span>
+    : decision ? <span>Decision so far: <b className="text-white">{act(decision.content.action)}</b></span>
+      : <span className="text-slate-400">The decision and the scorecard appear here when the incident ends</span>;
 
   return (
-    <div className="h-full flex flex-col">
-      {/* header */}
-      <header className="flex flex-wrap items-center gap-3 px-4 py-2 border-b border-slate-800 bg-slate-950">
-        <div className="flex items-baseline gap-2">
-          <span className="font-black tracking-[0.2em] text-slate-100">GHOST PROTOCOL</span>
-          <span className="text-[11px] text-slate-500">when AI agents disagree</span>
-        </div>
-        <nav className="flex gap-1 text-xs">
-          {(["live", "results"] as const).map((t) => (
-            <button key={t} onClick={() => setTab(t)} className={`px-2 py-1 rounded ${tab === t ? "bg-slate-800 text-white" : "text-slate-400"}`}>{t}</button>
-          ))}
-        </nav>
-        <div className="flex flex-wrap items-center gap-2 text-xs ml-auto">
-          <select title={SCENARIO_HELP[cfg.scenario]} value={cfg.scenario} onChange={(e) => set("scenario", e.target.value)} className="bg-slate-900 border border-slate-700 rounded px-2 py-1">
-            {(meta?.scenarios ?? ["S1", "S2", "S3", "S5"]).map((s: string) => <option key={s} value={s}>{s} · {SCENARIO_HELP[s] ?? ""}</option>)}
-          </select>
-          <select value={cfg.mode} onChange={(e) => set("mode", e.target.value)} className="bg-slate-900 border border-slate-700 rounded px-2 py-1">
-            {(meta?.modes ?? ["A", "B", "C", "D"]).map((m: string) => <option key={m} value={m}>Mode {m} · {MODE_HELP[m]}</option>)}
-          </select>
-          {cfg.mode === "D" && (
-            <select value={cfg.agents_mode_for_d} onChange={(e) => set("agents_mode_for_d", e.target.value)} className="bg-slate-900 border border-slate-700 rounded px-2 py-1" title="Which agent mode D hands over to">
-              <option value="B">then aggregator (B)</option>
-              <option value="C">then negotiation (C)</option>
-            </select>
-          )}
-          <label className="flex items-center gap-1">seed
-            <input type="number" value={cfg.seed} onChange={(e) => set("seed", +e.target.value)} className="w-14 bg-slate-900 border border-slate-700 rounded px-1 py-1" />
-          </label>
-          <label className="flex items-center gap-1" title="tick delay (seconds)">speed
-            <select value={cfg.tick_delay} onChange={(e) => set("tick_delay", +e.target.value)} className="bg-slate-900 border border-slate-700 rounded px-1 py-1">
-              <option value={1.5}>slow</option><option value={0.8}>demo</option><option value={0.25}>fast</option><option value={0}>instant</option>
-            </select>
-          </label>
-          <label className={`flex items-center gap-1 ${meta?.llm?.available ? "" : "opacity-50"}`} title={meta?.llm?.available ? meta.llm.model : "no LLM key in .env: agents use measured levels + template reasons"}>
-            <input type="checkbox" disabled={!meta?.llm?.available} checked={cfg.use_llm} onChange={(e) => set("use_llm", e.target.checked)} /> LLM
-          </label>
-          <select value={cfg.ablate ?? ""} onChange={(e) => set("ablate", e.target.value || null)} className="bg-slate-900 border border-slate-700 rounded px-1 py-1" title="Ablation: remove one agent's evidence">
-            <option value="">no ablation</option>
-            {derived.agents.map((a) => <option key={a.spec.id} value={a.spec.id}>ablate {a.spec.id}</option>)}
-          </select>
-          {running
-            ? <button onClick={stop} className="px-3 py-1 rounded bg-slate-700 hover:bg-slate-600 font-semibold">Stop</button>
-            : <button onClick={() => { setTab("live"); setSelected(null); start(cfg); }} className="px-3 py-1 rounded bg-violet-600 hover:bg-violet-500 font-semibold">Start</button>}
-        </div>
-      </header>
+    <div className="flex min-h-full flex-col bg-[radial-gradient(ellipse_at_top,_rgba(91,33,182,0.10),_transparent_55%)]">
+      <Header cfg={cfg} set={set} running={running} tab={tab} setTab={setTab}
+        onRun={() => { setTab("live"); setSelected(null); setFullLedger(false); start(cfg); }} onStop={stop}
+        scenarios={meta?.scenarios ?? ["S1", "S2", "S3", "S5"]} modes={meta?.modes ?? ["A", "B", "C", "D"]}
+        agentIds={derived.agents.map((a) => a.spec.id)} llmAvailable={!!meta?.llm?.available}
+        llmModel={meta?.llm?.model} onHelp={() => setHelp(true)} />
 
-      {meta?.error && <div className="bg-red-900/50 text-red-200 text-sm px-4 py-1">Backend not reachable. Start it: <span className="mono">uv run uvicorn backend.main:app --port 8000</span></div>}
+      {meta?.error && <div className="bg-red-900/50 px-6 py-1 text-sm text-red-200">Backend not reachable. Start it: <code>uv run uvicorn backend.main:app --port 8000</code></div>}
 
       {tab === "results" ? <Results /> : (
-        <main className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-[1fr_440px] xl:grid-cols-[1fr_520px]">
-          <section className="min-h-0 overflow-y-auto p-3 space-y-3">
-            <div className="flex items-center gap-3">
-              <ModeIndicator mode={derived.mode} />
-              <div className="ml-auto flex gap-4 text-xs mono text-slate-400 whitespace-nowrap">
-                <span>tick <b className="text-slate-100">{derived.tick}</b>/30</span>
-                {lastTel && <span>errors <b className={lastTel.content.error_rate > 0.03 ? "text-red-400" : "text-emerald-400"}>{(lastTel.content.error_rate * 100).toFixed(1)}%</b></span>}
-                {lastTel && <span>latency <b className={lastTel.content.latency_ms > 300 ? "text-red-400" : "text-emerald-400"}>{Math.round(lastTel.content.latency_ms)}ms</b></span>}
-                {lastTel?.content.lockout > 0 && <span className="text-orange-400">customer lockout!</span>}
-                {derived.agntcy?.enabled && (
-                  <span className={derived.agntcy.directory === "ok" ? "text-emerald-400" : "text-amber-400"}
-                    title="AGNTCY Directory + Observe (GHOST_AGNTCY=1)">AGNTCY {derived.agntcy.directory === "ok" ? "on" : "fallback"}</span>
-                )}
-                <span className={connected ? "text-emerald-500" : "text-slate-600"}>● {connected ? "live" : "idle"}</span>
+        <main className="flex-1 space-y-4 px-6 py-4">
+          {/* status strip */}
+          <div className="flex flex-wrap items-center gap-4">
+            <span className={`rounded-full px-4 py-1.5 text-sm font-semibold transition-colors duration-500 ${ph.cls}`}>{ph.label}</span>
+            {derived.mode?.reason && phase !== "idle" && <span className="max-w-xl truncate text-sm text-slate-400" title={derived.mode.reason}>
+              {phase === "resolved" ? `All services healthy again at minute ${derived.mode.tick}.` : derived.mode.reason}</span>}
+            <div className="ml-auto flex items-center gap-5 text-sm text-slate-400">
+              <div className="flex items-center gap-2">
+                <span>Minute {derived.tick} of 30<Info text="The simulation runs 30 ticks (think: minutes). The fault starts at minute 5." /></span>
+                <div className="h-1.5 w-32 overflow-hidden rounded-full bg-slate-800">
+                  <div className="h-full rounded-full bg-violet-500 transition-all duration-500" style={{ width: `${(derived.tick / 30) * 100}%` }} />
+                </div>
               </div>
+              {lastTel && <span>Errors <b className={lastTel.content.error_rate > 0.03 ? "text-red-300" : "text-emerald-300"}>{(lastTel.content.error_rate * 100).toFixed(1)}%</b></span>}
+              {lastTel && <span>Latency <b className={lastTel.content.latency_ms > 300 ? "text-red-300" : "text-emerald-300"}>{Math.round(lastTel.content.latency_ms)} ms</b></span>}
+              {lastTel?.content.lockout > 0 && <span className="font-semibold text-amber-300">Customers locked out!</span>}
+              {derived.agntcy?.enabled && <span className={derived.agntcy.directory === "ok" ? "text-emerald-400" : "text-amber-400"}>AGNTCY {derived.agntcy.directory === "ok" ? "on" : "fallback"}<Info text="Agents are registered in the AGNTCY Directory and every message is traced with OpenTelemetry." /></span>}
+              <span className={connected ? "text-emerald-400" : "text-slate-600"}>● {connected ? "live" : "idle"}</span>
             </div>
-            <div className="rounded-lg border border-slate-800 bg-slate-900/40">
-              <div className="px-3 pt-2 text-xs text-slate-400 flex gap-2">
-                <span className="font-semibold text-slate-200">Payments platform</span>
-                {derived.start && <span>scenario {derived.start.content.scenario} · mode {derived.start.content.mode} · seed {derived.start.content.seed} · sim: {derived.start.content.simulator}</span>}
-              </div>
-              <ServiceGraph services={err ?? derived.services} />
+          </div>
+          {derived.error && <div className="rounded-lg border border-red-600 bg-red-950 p-2 text-sm text-red-200">{derived.error}</div>}
+
+          <div className="grid gap-5 xl:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
+            <div className="flex min-w-0 flex-col gap-5">
+              <Step n={1} title="What broke" help="The payments platform. Failing services glow red; hover a service for all of its numbers.">
+                <ServiceGraph services={derived.services} />
+              </Step>
+              <Step n={2} title="What the agents think" collapsible open={showAgents} onToggle={() => setShowAgents((o) => !o)} summary={agentsSummary}
+                help="Each agent sees only its own data and guesses the cause. Their goals differ, so they can disagree.">
+                <AgentRoster agents={derived.agents} cids={derived.agntcy?.cids}
+                  onSelect={(id) => { setAgentFilter(id); setFullLedger(true); }} />
+              </Step>
             </div>
-            {derived.lastAction && (
-              <button onClick={() => setSelected(derived.lastAction)} className="w-full text-left rounded-lg border border-red-500/40 bg-red-500/5 px-3 py-2 text-sm hover:bg-red-500/10">
-                <span className="text-xs text-red-300 font-semibold mr-2">LAST ACTION · t{derived.lastAction.tick}</span>
-                <span className="mono">{derived.lastAction.content.action}</span>
-                <span className="text-slate-400"> by {derived.lastAction.sender}: {derived.lastAction.rationale}</span>
-                <span className="text-xs text-slate-500"> (click for provenance)</span>
-              </button>
-            )}
-            {derived.metrics && (
-              <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
-                {[
-                  ["Correct diagnosis", derived.metrics.correct_diagnosis ? "yes" : "no", derived.metrics.correct_diagnosis],
-                  ["Recovery", `${derived.metrics.recovery_time} ticks`, derived.metrics.recovery_time < 15],
-                  ["Availability", `${(derived.metrics.availability * 100).toFixed(1)}%`, derived.metrics.availability > 0.95],
-                  ["Unnecessary actions", derived.metrics.unnecessary_actions, derived.metrics.unnecessary_actions === 0],
-                  ["Asked human", derived.metrics.escalated_to_human ? "yes" : "no", true],
-                  ["LLM calls", derived.metrics.llm_calls, true],
-                ].map(([k, v, good]) => (
-                  <div key={k as string} className={`rounded-lg border p-2 ${good ? "border-emerald-700/50" : "border-red-700/60"}`}>
-                    <div className="text-[10px] text-slate-500 uppercase">{k}</div>
-                    <div className="text-lg font-semibold">{String(v)}</div>
-                  </div>
-                ))}
-              </div>
-            )}
-            {derived.error && <div className="rounded border border-red-600 bg-red-950 p-2 text-sm text-red-200">{derived.error}</div>}
-            <div>
-              <div className="text-xs text-slate-400 mb-2 flex gap-2">
-                <span className="font-semibold text-slate-200">Agent roster</span>
-                <span>live beliefs over 4 hypotheses · click an agent to filter the ledger</span>
-              </div>
-              <AgentRoster agents={derived.agents} cids={derived.agntcy?.cids} onSelect={(id) => setAgentFilter(id === agentFilter ? null : id)} />
+
+            <div className="flex min-w-0 flex-col gap-5 xl:h-[calc(100vh-200px)] xl:min-h-[700px]">
+              <Step n={3} title="How they decided" className="min-h-[420px] flex-1"
+                help={fullLedger ? "Every message, including each vote. Click a line for details." : "The key moments, in order. Click any moment to see the evidence behind it."}
+                right={<span onClick={(e) => { e.stopPropagation(); setFullLedger((f) => !f); }} role="button" tabIndex={0}
+                  className="cursor-pointer rounded-full border border-slate-700 px-3 py-1 text-xs text-slate-400 hover:border-slate-500 hover:text-slate-200">
+                  {fullLedger ? "Back to the story" : "Full log"}</span>}>
+                <div className="min-h-0 flex-1">
+                  {fullLedger ? (
+                    <div className="h-full overflow-hidden rounded-lg border border-slate-800">
+                      <Ledger messages={messages} roster={roster} selected={selected?.id ?? null} onSelect={setSelected}
+                        agentFilter={agentFilter} clearAgentFilter={() => setAgentFilter(null)} traceId={derived.agntcy?.trace_id} />
+                    </div>
+                  ) : (
+                    <Timeline messages={messages} roster={roster} onSelect={openById} />
+                  )}
+                </div>
+              </Step>
+              <Step n={4} title="Did it work" collapsible open={showOutcome} onToggle={() => setShowOutcome((o) => !o)} summary={outcomeSummary}
+                className="shrink-0" help="What was done, and how the outcome compares with the fixed-rule baseline.">
+                <div className="space-y-3 overflow-y-auto">
+                  <DecisionCard messages={messages} roster={roster} onOpen={setSelected} />
+                  <ResultCard metrics={derived.metrics} scenario={run?.scenario ?? cfg.scenario} mode={run?.mode ?? cfg.mode} official={official} />
+                </div>
+              </Step>
             </div>
-          </section>
-          <aside className="min-h-0 border-l border-slate-800 bg-slate-950 h-[60vh] lg:h-auto">
-            <Ledger messages={messages} roster={roster} selected={selected?.id ?? null} onSelect={setSelected}
-              agentFilter={agentFilter} clearAgentFilter={() => setAgentFilter(null)} traceId={derived.agntcy?.trace_id} />
-          </aside>
+          </div>
         </main>
       )}
 
@@ -172,6 +200,7 @@ export default function App() {
         <ApprovalPanel key={derived.escalation.id} esc={derived.escalation} onAnswer={answer}
           onShowProvenance={() => setSelected(derived.escalation)} />
       )}
+      {help && <HowTo onClose={() => setHelp(false)} />}
     </div>
   );
 }
