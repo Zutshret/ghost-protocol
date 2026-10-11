@@ -58,7 +58,8 @@ export default function App() {
   const started = useRef(false);
 
   useEffect(() => {
-    if (!seenHowTo()) setHelp(true);
+    const q = new URLSearchParams(location.search);
+    if (!seenHowTo() && !q.get("autorun") && !q.get("tab")) setHelp(true);
     fetch("/api/results").then((r) => r.json()).then((d) => setOfficial(d.official?.summary ?? null)).catch(() => {});
   }, []);
 
@@ -73,6 +74,7 @@ export default function App() {
     if (q.get("seed")) next.seed = Number(q.get("seed"));
     if (q.get("speed")) next.tick_delay = Number(q.get("speed"));
     if (q.get("autorun") === "1") { setHelp(false); start(next); }
+    if (q.get("tab") === "results") { setHelp(false); setTab("results"); }
     setCfg(next);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
